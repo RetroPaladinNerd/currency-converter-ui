@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
-import { Container, Box, Typography } from '@mui/material';
+import CurrencyConverter from './components/CurrencyConverter';
+import BankList from './components/BankList';
+import CurrencyList from './components/CurrencyList';
+import ExchangeRateList from './components/ExchangeRateList';
+import { Container, Box } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './index.css';
 
@@ -145,62 +150,22 @@ const MainContentContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
 }));
 
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    marginTop: theme.spacing(2),
-    width: '100vw',
-    boxSizing: 'border-box',
-    borderTop: '1px solid #e0e0e0',
-    position: 'relative',
-    left: '50%',
-    right: '50%',
-    marginLeft: '-50vw',
-    marginRight: '-50vw',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled('a')({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-});
-
 function App() {
-    const [selectedTab, setSelectedTab] = useState('converter');
-
-    const handleTabChange = (tab) => {
-        setSelectedTab(tab);
-    };
-
     return (
         <ThemeProvider theme={theme}>
-            <AppContainer disableGutters>
-                <Sidebar onTabChange={handleTabChange} selectedTab={selectedTab} />
-                <MainContentContainer>
-                    <MainContent selectedTab={selectedTab} />
-                </MainContentContainer>
-            </AppContainer>
-            <Footer>
-                <FooterLinks>
-                    <FooterLink href="/" onClick={(e) => { e.preventDefault(); handleTabChange('converter'); }}>Converter</FooterLink>
-                    <FooterLink href="/currencies" onClick={(e) => { e.preventDefault(); handleTabChange('currencies'); }}>Currencies</FooterLink>
-                    <FooterLink href="/banks" onClick={(e) => { e.preventDefault(); handleTabChange('banks'); }}>Banks</FooterLink>
-                    <FooterLink href="/exchange-rates" onClick={(e) => { e.preventDefault(); handleTabChange('exchange-rates'); }}>Exchange Rates</FooterLink>
-                </FooterLinks>
-                <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                </Typography>
-            </Footer>
+            <Router>
+                <AppContainer disableGutters>
+                    <Sidebar />
+                    <MainContentContainer>
+                        <Routes>
+                            <Route path="/" element={<CurrencyConverter />} />
+                            <Route path="/banks" element={<BankList />} />
+                            <Route path="/currencies" element={<CurrencyList />} />
+                            <Route path="/exchange-rates" element={<ExchangeRateList />} />
+                        </Routes>
+                    </MainContentContainer>
+                </AppContainer>
+            </Router>
         </ThemeProvider>
     );
 }

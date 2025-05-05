@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, styled } from '@mui/material';
+import { NavLink } from 'react-router-dom';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import EuroIcon from '@mui/icons-material/Euro';
@@ -17,35 +18,43 @@ const SidebarContainer = styled(Drawer)(({ theme }) => ({
     },
 }));
 
-function Sidebar({ onTabChange, selectedTab }) {
-    const handleTabClick = (tab) => {
-        onTabChange(tab);
-    };
+const StyledNavLink = styled(NavLink)(({ theme }) => ({
+    color: '#666666',
+    textDecoration: 'none',
+    width: '100%',
+    '&.active': {
+        color: '#007aff',
+    },
+    '&:hover': {
+        backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    },
+}));
 
+function Sidebar() {
     return (
         <SidebarContainer variant="permanent" anchor="left">
             <List>
-                <ListItem button selected={selectedTab === 'converter'} onClick={() => handleTabClick('converter')}>
+                <ListItem button component={StyledNavLink} to="/" activeClassName="active">
                     <ListItemIcon>
-                        <SwapHorizIcon sx={{ color: selectedTab === 'converter' ? '#007aff' : '#666666' }} />
+                        <SwapHorizIcon sx={{ color: 'inherit' }} />
                     </ListItemIcon>
                     <ListItemText primary="Конвертер" />
                 </ListItem>
-                <ListItem button selected={selectedTab === 'banks'} onClick={() => handleTabClick('banks')}>
+                <ListItem button component={StyledNavLink} to="/banks" activeClassName="active">
                     <ListItemIcon>
-                        <AccountBalanceIcon sx={{ color: selectedTab === 'banks' ? '#007aff' : '#666666' }} />
+                        <AccountBalanceIcon sx={{ color: 'inherit' }} />
                     </ListItemIcon>
                     <ListItemText primary="Банки" />
                 </ListItem>
-                <ListItem button selected={selectedTab === 'currencies'} onClick={() => handleTabClick('currencies')}>
+                <ListItem button component={StyledNavLink} to="/currencies" activeClassName="active">
                     <ListItemIcon>
-                        <EuroIcon sx={{ color: selectedTab === 'currencies' ? '#007aff' : '#666666' }} />
+                        <EuroIcon sx={{ color: 'inherit' }} />
                     </ListItemIcon>
                     <ListItemText primary="Валюты" />
                 </ListItem>
-                <ListItem button selected={selectedTab === 'exchangeRates'} onClick={() => handleTabClick('exchangeRates')}>
+                <ListItem button component={StyledNavLink} to="/exchange-rates" activeClassName="active">
                     <ListItemIcon>
-                        <AttachMoneyIcon sx={{ color: selectedTab === 'exchangeRates' ? '#007aff' : '#666666' }} />
+                        <AttachMoneyIcon sx={{ color: 'inherit' }} />
                     </ListItemIcon>
                     <ListItemText primary="Обменные курсы" />
                 </ListItem>
