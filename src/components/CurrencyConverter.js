@@ -113,7 +113,7 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    width: '100%', // Ограничен контейнером MainContent
+    width: '106%', // Ограничен контейнером MainContent
     boxSizing: 'border-box',
     marginTop: theme.spacing(2),
     borderTop: '1px solid #e0e0e0',
@@ -139,7 +139,7 @@ const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    width: '106%',
+    width: '100%',
 });
 
 function CurrencyConverter() {
