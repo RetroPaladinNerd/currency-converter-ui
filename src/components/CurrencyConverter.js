@@ -12,7 +12,7 @@ import currencyService from '../services/currencyService';
 
 const MainContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
-    gap: theme.spacing(2), // Увеличен gap для пространства между курсами и конвертером/банками
+    gap: theme.spacing(2),
     padding: theme.spacing(1),
     width: '100%',
     maxWidth: '100%',
@@ -39,7 +39,7 @@ const RightColumn = styled(Box)(({ theme }) => ({
 const StyledPaper = styled(Paper, {
     shouldForwardProp: (prop) => prop !== 'isExchangeRates',
 })(({ theme, isExchangeRates }) => ({
-    padding: theme.spacing(2.5), // Увеличен padding на 50 пикселей (2 -> 2.5 * 20px = 50px)
+    padding: theme.spacing(2.5),
     borderRadius: '20px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     backgroundColor: theme.palette.background.paper,
@@ -113,10 +113,11 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '100%', // Сделал как у карточек
+    width: '100%', // Полная ширина контейнера
     boxSizing: 'border-box',
-    marginTop: theme.spacing(2), // Добавлен небольшой отступ сверху
+    marginTop: theme.spacing(2),
+    border: 'none', // Убраны границы
+    boxShadow: 'none', // Убрана тень
 }));
 
 const FooterLinks = styled(Box)({
