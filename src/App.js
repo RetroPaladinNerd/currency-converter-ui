@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import CurrencyList from './components/CurrencyList'; // Предполагаемый компонент для валют
 import { Container, Box } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './index.css';
+
+// Заглушка для компонента Banks, замените на реальный компонент
+const Banks = () => (
+    <Box sx={{ padding: 2 }}>
+        <h2>Банки</h2>
+        <p>Здесь будет список банков.</p>
+    </Box>
+);
+
+// Заглушка для компонента ExchangeRates, замените на реальный компонент
+const ExchangeRates = () => (
+    <Box sx={{ padding: 2 }}>
+        <h2>Обменные курсы</h2>
+        <p>Здесь будут обменные курсы.</p>
+    </Box>
+);
 
 const theme = createTheme({
     palette: {
@@ -123,8 +141,6 @@ const theme = createTheme({
     },
 });
 
-//const drawerWidth = 200;
-
 const AppContainer = styled(Container)({
     display: 'flex',
     minHeight: '100vh',
@@ -147,21 +163,57 @@ const MainContentContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
 }));
 
-function App() {
-    const [selectedTab, setSelectedTab] = useState('converter');
+// Обновлённый Sidebar с использованием маршрутизации
+function SidebarWithRouter(props) {
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleTabChange = (tab) => {
-        setSelectedTab(tab);
+    // Определяем текущую вкладку на основе пути
+    const getSelectedTab = () => {
+        if (location.pathname === '/currencies') return 'currencies';
+        if (location.pathname === '/banks') return 'banks';
+        if (location.pathname === '/exchange-rates') return 'exchange-rates';
+        return 'converter'; // По умолчанию
     };
 
+    const handleTabChange = (tab) => {
+        switch (tab) {
+            case 'converter':
+                navigate('/');
+                break;
+            case 'currencies':
+                navigate('/currencies');
+                break;
+            case 'banks':
+                navigate('/banks');
+                break;
+            case 'exchange-rates':
+                navigate('/exchange-rates');
+                break;
+            default:
+                navigate('/');
+        }
+    };
+
+    return <Sidebar {...props} onTabChange={handleTabChange} selectedTab={getSelectedTab()} />;
+}
+
+function App() {
     return (
         <ThemeProvider theme={theme}>
-            <AppContainer disableGutters>
-                <Sidebar onTabChange={handleTabChange} selectedTab={selectedTab} /> {/* Исправлено на onTabChange */}
-                <MainContentContainer>
-                    <MainContent selectedTab={selectedTab} />
-                </MainContentContainer>
-            </AppContainer>
+            <Router basename="/">
+                <AppContainer disableGutters>
+                    <SidebarWithRouter />
+                    <MainContentContainer>
+                        <Routes>
+                            <Route path="/" element={<MainContent selectedTab="converter" />} />
+                            <Route path="/currencies" element={<CurrencyList />} />
+                            <Route path="/banks" element={<Banks />} />
+                            <Route path="/exchange-rates" element={<ExchangeRates />} />
+                        </Routes>
+                    </MainContentContainer>
+                </AppContainer>
+            </Router>
         </ThemeProvider>
     );
 }
