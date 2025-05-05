@@ -73,9 +73,14 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     marginTop: theme.spacing(2),
-    width: '100%',
+    width: '100vw',
     boxSizing: 'border-box',
     borderTop: '1px solid #e0e0e0',
+    position: 'relative',
+    left: '50%',
+    right: '50%',
+    marginLeft: '-50vw',
+    marginRight: '-50vw',
 }));
 
 const FooterLinks = styled(Box)({
@@ -240,6 +245,17 @@ function CurrencyList() {
 
     const isFormValid = newCode.trim() && newName.trim();
 
+    // Фильтрация ввода только букв
+    const handleCodeChange = (e) => {
+        const value = e.target.value.replace(/[^a-zA-Z]/g, '');
+        setNewCode(value);
+    };
+
+    const handleNameChange = (e) => {
+        const value = e.target.value.replace(/[^a-zA-Z]/g, '');
+        setNewName(value);
+    };
+
     return (
         <Box sx={{
             display: 'flex',
@@ -391,9 +407,10 @@ function CurrencyList() {
             </Box>
             <Footer>
                 <FooterLinks>
-                    <FooterLink href="/">Converter</FooterLink>
-                    <FooterLink href="/currencies">Currencies</FooterLink>
-                    <FooterLink href="/exchange-rates">Exchange Rates</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
                 </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
                     © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
@@ -407,8 +424,8 @@ function CurrencyList() {
                 sx={{
                     '& .MuiDialog-paper': {
                         width: '400px',
-                        minHeight: '300px',
-                        maxHeight: '300px',
+                        minHeight: '280px',
+                        maxHeight: '280px',
                         overflowY: 'auto',
                     },
                 }}
@@ -424,9 +441,10 @@ function CurrencyList() {
                         fullWidth
                         variant="outlined"
                         value={newCode}
-                        onChange={(e) => setNewCode(e.target.value)}
+                        onChange={handleCodeChange}
                         size="small"
                         required
+                        inputProps={{ maxLength: 3 }} // Ограничение длины кода (например, 3 символа)
                     />
                     <TextField
                         margin="dense"
@@ -436,7 +454,7 @@ function CurrencyList() {
                         fullWidth
                         variant="outlined"
                         value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
+                        onChange={handleNameChange}
                         size="small"
                         required
                     />
