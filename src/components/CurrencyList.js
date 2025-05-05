@@ -68,6 +68,15 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     overflowX: 'hidden',
 }));
 
+const Footer = styled(Box)(({ theme }) => ({
+    textAlign: 'center',
+    padding: theme.spacing(2),
+    backgroundColor: '#f5f5f5',
+    marginTop: theme.spacing(2),
+    width: '100%',
+    boxSizing: 'border-box',
+}));
+
 function CurrencyList() {
     const [currencies, setCurrencies] = useState([]);
     const [filteredCurrencies, setFilteredCurrencies] = useState([]);
@@ -158,8 +167,7 @@ function CurrencyList() {
 
     const handleCreateCurrency = async () => {
         if (!newCode.trim() || !newName.trim()) {
-            alert("Ошибка: Все поля должны быть заполнены.");
-            return;
+            return; // Prevent submission if fields are incomplete
         }
         try {
             await currencyService.createCurrency(newCode, newName);
@@ -173,8 +181,7 @@ function CurrencyList() {
 
     const handleUpdateCurrency = async () => {
         if (!newCode.trim() || !newName.trim()) {
-            alert("Ошибка: Все поля должны быть заполнены.");
-            return;
+            return; // Prevent submission if fields are incomplete
         }
         try {
             await currencyService.updateCurrency(selectedCurrencyId, newCode, newName);
@@ -215,6 +222,8 @@ function CurrencyList() {
         setCurrentPage(value);
     };
 
+    const isFormValid = newCode.trim() && newName.trim();
+
     return (
         <Box sx={{
             display: 'flex',
@@ -224,11 +233,14 @@ function CurrencyList() {
             overflowX: 'hidden',
             paddingLeft: '0',
             boxSizing: 'border-box',
+            minHeight: '100vh', // Ensure footer stays at bottom
+            flexDirection: 'column',
         }}>
             <Box sx={{
                 maxWidth: '900px',
                 width: '100%',
                 margin: '0 auto',
+                flex: 1, // Allow footer to push content up
             }}>
                 <Grid container spacing={2} sx={{
                     width: '100%',
@@ -361,6 +373,11 @@ function CurrencyList() {
                     </Grid>
                 </Grid>
             </Box>
+            <Footer>
+                <Typography variant="body2" color="textSecondary">
+                    © 2025 Currency Converter. All rights reserved. | <a href="https://example.com" target="_blank" rel="noopener noreferrer">Contact Us</a>
+                </Typography>
+            </Footer>
             <Dialog open={open} onClose={handleClose} TransitionComponent={Fade} TransitionProps={{ timeout: 300}}>
                 <DialogTitle>{editing ? "Редактировать валюту" : "Создать валюту"}</DialogTitle>
                 <DialogContent>
@@ -375,6 +392,7 @@ function CurrencyList() {
                         value={newCode}
                         onChange={(e) => setNewCode(e.target.value)}
                         size="small"
+                        required
                     />
                     <TextField
                         margin="dense"
@@ -386,11 +404,21 @@ function CurrencyList() {
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         size="small"
+                        required
                     />
+                    {!isFormValid && (
+                        <Typography variant="caption" color="error" sx={{ mt: 1 }}>
+                            Все поля должны быть заполнены.
+                        </Typography>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">Отмена</Button>
-                    <Button onClick={editing ? handleUpdateCurrency : handleCreateCurrency} color="primary">
+                    <Button
+                        onClick={editing ? handleUpdateCurrency : handleCreateCurrency}
+                        color="primary"
+                        disabled={!isFormValid}
+                    >
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
                 </DialogActions>
