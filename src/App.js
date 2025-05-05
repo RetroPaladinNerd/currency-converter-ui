@@ -192,10 +192,10 @@ function App() {
             </AppContainer>
             <Footer>
                 <FooterLinks>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
+                    <FooterLink href="/" onClick={(e) => { e.preventDefault(); handleTabChange('converter'); }}>Converter</FooterLink>
+                    <FooterLink href="/currencies" onClick={(e) => { e.preventDefault(); handleTabChange('currencies'); }}>Currencies</FooterLink>
+                    <FooterLink href="/banks" onClick={(e) => { e.preventDefault(); handleTabChange('banks'); }}>Banks</FooterLink>
+                    <FooterLink href="/exchange-rates" onClick={(e) => { e.preventDefault(); handleTabChange('exchange-rates'); }}>Exchange Rates</FooterLink>
                 </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
                     © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
