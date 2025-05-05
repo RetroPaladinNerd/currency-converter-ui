@@ -113,11 +113,16 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    width: '100%', // Полная ширина контейнера
+    width: '100vw', // Растянут на весь экран
+    position: 'relative',
+    left: '50%',
+    right: '50%',
+    marginLeft: '-50vw',
+    marginRight: '-50vw',
     boxSizing: 'border-box',
     marginTop: theme.spacing(2),
-    border: 'none', // Убраны границы
-    boxShadow: 'none', // Убрана тень
+    borderTop: '1px solid #e0e0e0',
+    boxShadow: '0 -2px 8px rgba(0,0,0,0.05)', // Вернул тень
 }));
 
 const FooterLinks = styled(Box)({
