@@ -139,7 +139,7 @@ const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    width: '100%',
+    width: '106%',
 });
 
 function CurrencyConverter() {
