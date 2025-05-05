@@ -391,17 +391,28 @@ function CurrencyList() {
             </Box>
             <Footer>
                 <FooterLinks>
-                    <FooterLink href="/">Home</FooterLink>
+                    <FooterLink href="/">Converter</FooterLink>
                     <FooterLink href="/currencies">Currencies</FooterLink>
                     <FooterLink href="/exchange-rates">Exchange Rates</FooterLink>
-                    <FooterLink href="/about">About</FooterLink>
-                    <FooterLink href="/contact">Contact</FooterLink>
                 </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
                     © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
                 </Typography>
             </Footer>
-            <Dialog open={open} onClose={handleClose} TransitionComponent={Fade} TransitionProps={{ timeout: 300}}>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 300 }}
+                sx={{
+                    '& .MuiDialog-paper': {
+                        width: '400px',
+                        minHeight: '250px',
+                        maxHeight: '250px',
+                        overflowY: 'auto',
+                    },
+                }}
+            >
                 <DialogTitle>{editing ? "Редактировать валюту" : "Создать валюту"}</DialogTitle>
                 <DialogContent>
                     <TextField
