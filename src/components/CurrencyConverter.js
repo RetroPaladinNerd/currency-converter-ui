@@ -27,8 +27,7 @@ const LeftColumn = styled(Box)(({ theme }) => ({
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
-    width: '450px',
-    flexShrink: 0,
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
 }));

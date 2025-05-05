@@ -44,7 +44,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     '&:hover': {
         transform: 'translateY(-2px)',
     },
+    maxWidth: '500px',
     width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
 }));
 
 const StyledAddBox = styled(Box)({
