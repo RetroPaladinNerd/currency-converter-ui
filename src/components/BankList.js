@@ -17,9 +17,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     borderRadius: '20px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     backgroundColor: theme.palette.background.paper,
-    width: '100%',
-    maxWidth: '500px',
-    margin: '0 auto',
     transition: 'transform 0.2s ease',
     '&:hover': {
         transform: 'translateY(-2px)',
@@ -59,12 +56,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw',
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    boxSizing: 'border-box',
-    zIndex: 1000,
+    width: '100%',
+    marginTop: 'auto',
 }));
 
 const FooterLinks = styled(Box)({
@@ -83,12 +76,9 @@ const FooterLink = styled(Link)({
 });
 
 const MainContent = styled(Box)({
-    minHeight: '100vh',
-    paddingBottom: '100px', // Отступ для футера
-    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    minHeight: '100vh',
 });
 
 function BankList() {
@@ -173,52 +163,50 @@ function BankList() {
     };
 
     return (
-        <>
-            <MainContent>
-                <StyledPaper elevation={1}>
-                    <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
-                        Банки
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        {currentBanks.map((bank) => (
-                            <Fade in key={bank.id} timeout={300}>
-                                <BankItem>
-                                    <Typography variant="body1">{bank.name}</Typography>
-                                    <Box sx={{ display: 'flex', gap: 1 }}>
-                                        <IconButton onClick={() => handleEditBank(bank)} size="small">
-                                            <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDeleteBank(bank.id)} size="small">
-                                            <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                        </IconButton>
-                                    </Box>
-                                </BankItem>
-                            </Fade>
-                        ))}
-                        {banks.length === 0 && (
-                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                Банки не найдены.
-                            </Typography>
-                        )}
-                    </Box>
-                    <StyledAddBox>
-                        <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
-                            Добавить банк
-                        </Button>
-                    </StyledAddBox>
-                    {banks.length > itemsPerPage && (
-                        <PaginationContainer>
-                            <Pagination
-                                count={totalPages}
-                                page={currentPage}
-                                onChange={handlePageChange}
-                                color="primary"
-                                shape="rounded"
-                            />
-                        </PaginationContainer>
+        <MainContent>
+            <StyledPaper elevation={1}>
+                <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
+                    Банки
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {currentBanks.map((bank) => (
+                        <Fade in key={bank.id} timeout={300}>
+                            <BankItem>
+                                <Typography variant="body1">{bank.name}</Typography>
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <IconButton onClick={() => handleEditBank(bank)} size="small">
+                                        <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleDeleteBank(bank.id)} size="small">
+                                        <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                    </IconButton>
+                                </Box>
+                            </BankItem>
+                        </Fade>
+                    ))}
+                    {banks.length === 0 && (
+                        <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                            Банки не найдены.
+                        </Typography>
                     )}
-                </StyledPaper>
-            </MainContent>
+                </Box>
+                <StyledAddBox>
+                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                        Добавить банк
+                    </Button>
+                </StyledAddBox>
+                {banks.length > itemsPerPage && (
+                    <PaginationContainer>
+                        <Pagination
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            color="primary"
+                            shape="rounded"
+                        />
+                    </PaginationContainer>
+                )}
+            </StyledPaper>
             <Footer>
                 <FooterLinks>
                     <FooterLink to="/">Converter</FooterLink>
@@ -253,8 +241,8 @@ function BankList() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </MainContent>
     );
 }
 
-export default BankList;
+export default BankList;    

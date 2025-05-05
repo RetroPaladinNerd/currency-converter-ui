@@ -45,9 +45,6 @@ const StyledPaper = styled(Paper, {
     '&:hover': {
         transform: 'translateY(-2px)',
     },
-    maxWidth: '500px',
-    display: 'flex',
-    flexDirection: 'column',
     ...(isExchangeRates && {
         flexGrow: 1,
     }),
@@ -112,12 +109,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw',
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    boxSizing: 'border-box',
-    zIndex: 1000,
+    width: '100%',
+    marginTop: 'auto',
 }));
 
 const FooterLinks = styled(Box)({
@@ -136,12 +129,9 @@ const FooterLink = styled(Link)({
 });
 
 const MainContent = styled(Box)({
-    minHeight: '100vh',
-    paddingBottom: '100px', // Отступ для футера
-    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    minHeight: '100vh',
 });
 
 function CurrencyConverter() {
@@ -245,160 +235,158 @@ function CurrencyConverter() {
     };
 
     return (
-        <>
-            <MainContent>
-                <MainContainer>
-                    <LeftColumn>
-                        <StyledPaper elevation={1}>
-                            <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
-                                Конвертер валют
-                            </Typography>
-                            <StyledFormBox>
+        <MainContent>
+            <MainContainer>
+                <LeftColumn>
+                    <StyledPaper elevation={1}>
+                        <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
+                            Конвертер валют
+                        </Typography>
+                        <StyledFormBox>
+                            <FormControl fullWidth variant="outlined" size="small">
+                                <InputLabel id="bank-select-label">Банк</InputLabel>
+                                <Select
+                                    labelId="bank-select-label"
+                                    id="bank-select"
+                                    value={bank}
+                                    label="Банк"
+                                    onChange={(e) => setBank(e.target.value)}
+                                >
+                                    {banks.map((bank) => (
+                                        <MenuItem key={bank.id} value={bank.id}>{bank.name}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <FormControl fullWidth variant="outlined" size="small">
-                                    <InputLabel id="bank-select-label">Банк</InputLabel>
+                                    <InputLabel id="from-currency-select-label">Из валюты</InputLabel>
                                     <Select
-                                        labelId="bank-select-label"
-                                        id="bank-select"
-                                        value={bank}
-                                        label="Банк"
-                                        onChange={(e) => setBank(e.target.value)}
+                                        labelId="from-currency-select-label"
+                                        id="from-currency-select"
+                                        value={fromCurrency}
+                                        label="Из валюты"
+                                        onChange={(e) => setFromCurrency(e.target.value)}
                                     >
-                                        {banks.map((bank) => (
-                                            <MenuItem key={bank.id} value={bank.id}>{bank.name}</MenuItem>
+                                        {currencies.map((currency) => (
+                                            <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <FormControl fullWidth variant="outlined" size="small">
-                                        <InputLabel id="from-currency-select-label">Из валюты</InputLabel>
-                                        <Select
-                                            labelId="from-currency-select-label"
-                                            id="from-currency-select"
-                                            value={fromCurrency}
-                                            label="Из валюты"
-                                            onChange={(e) => setFromCurrency(e.target.value)}
-                                        >
-                                            {currencies.map((currency) => (
-                                                <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <IconButton onClick={handleSwapCurrencies} sx={{ p: 0 }}>
-                                        <SwapVertIcon />
-                                    </IconButton>
-                                    <FormControl fullWidth variant="outlined" size="small">
-                                        <InputLabel id="to-currency-select-label">В валюту</InputLabel>
-                                        <Select
-                                            labelId="to-currency-select-label"
-                                            id="to-currency-select"
-                                            value={toCurrency}
-                                            label="В валюту"
-                                            onChange={(e) => setToCurrency(e.target.value)}
-                                        >
-                                            {currencies.map((currency) => (
-                                                <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                                <TextField
-                                    label="Сумма"
-                                    type="number"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                />
-                                <Button variant="contained" color="primary" onClick={handleConvert}>
-                                    Конвертировать
-                                </Button>
-                                {result && (
-                                    <Typography variant="body1" align="center" sx={{ mt: 1 }}>
-                                        Результат: {result}
-                                    </Typography>
-                                )}
-                            </StyledFormBox>
-                        </StyledPaper>
-                        <StyledPaper elevation={1}>
-                            <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
-                                Список банков
-                            </Typography>
-                            <BankListContainer>
-                                {banks.map((bank) => (
-                                    <BankItem key={bank.id}>
-                                        <Typography variant="body1">{bank.name}</Typography>
-                                        {bankRates[bank.id] && (
-                                            <Box sx={{ mt: 0.5, display: 'flex', gap: 2 }}>
-                                                {bankRates[bank.id].usdToByn && (
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        USD → BYN: {bankRates[bank.id].usdToByn}
-                                                    </Typography>
-                                                )}
-                                                {bankRates[bank.id].rubToByn && (
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        RUB → BYN: {bankRates[bank.id].rubToByn}
-                                                    </Typography>
-                                                )}
-                                                {bankRates[bank.id].eurToByn && (
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        EUR → BYN: {bankRates[bank.id].eurToByn}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                        )}
-                                    </BankItem>
-                                ))}
-                                {banks.length === 0 && (
-                                    <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
-                                        Банки не найдены.
-                                    </Typography>
-                                )}
-                            </BankListContainer>
-                        </StyledPaper>
-                    </LeftColumn>
-                    <RightColumn>
-                        <StyledPaper elevation={1} isExchangeRates>
-                            <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
-                                Текущие курсы
-                            </Typography>
-                            <RateListContainer>
-                                {currentExchangeRates.map((rate, index) => {
-                                    const nextRate = currentExchangeRates[index + 1];
-                                    const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
-                                    return (
-                                        <RateItem key={index} addExtraSpace={addExtraSpace}>
-                                            <Typography variant="body1">
-                                                {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
-                                            </Typography>
-                                            <Typography variant="body1" color="text.primary">
-                                                Банк: {bankMap[rate.bankId]?.name || 'Неизвестный банк'}
-                                            </Typography>
-                                        </RateItem>
-                                    );
-                                })}
-                                {exchangeRates.length === 0 && (
-                                    <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
-                                        Курсы не найдены.
-                                    </Typography>
-                                )}
-                            </RateListContainer>
-                            {exchangeRates.length > 0 && (
-                                <PaginationContainer>
-                                    <Pagination
-                                        count={totalPages}
-                                        page={currentPage}
-                                        onChange={handlePageChange}
-                                        color="primary"
-                                        shape="rounded"
-                                        size="small"
-                                    />
-                                </PaginationContainer>
+                                <IconButton onClick={handleSwapCurrencies} sx={{ p: 0 }}>
+                                    <SwapVertIcon />
+                                </IconButton>
+                                <FormControl fullWidth variant="outlined" size="small">
+                                    <InputLabel id="to-currency-select-label">В валюту</InputLabel>
+                                    <Select
+                                        labelId="to-currency-select-label"
+                                        id="to-currency-select"
+                                        value={toCurrency}
+                                        label="В валюту"
+                                        onChange={(e) => setToCurrency(e.target.value)}
+                                    >
+                                        {currencies.map((currency) => (
+                                            <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                            <TextField
+                                label="Сумма"
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                            />
+                            <Button variant="contained" color="primary" onClick={handleConvert}>
+                                Конвертировать
+                            </Button>
+                            {result && (
+                                <Typography variant="body1" align="center" sx={{ mt: 1 }}>
+                                    Результат: {result}
+                                </Typography>
                             )}
-                        </StyledPaper>
-                    </RightColumn>
-                </MainContainer>
-            </MainContent>
+                        </StyledFormBox>
+                    </StyledPaper>
+                    <StyledPaper elevation={1}>
+                        <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
+                            Список банков
+                        </Typography>
+                        <BankListContainer>
+                            {banks.map((bank) => (
+                                <BankItem key={bank.id}>
+                                    <Typography variant="body1">{bank.name}</Typography>
+                                    {bankRates[bank.id] && (
+                                        <Box sx={{ mt: 0.5, display: 'flex', gap: 2 }}>
+                                            {bankRates[bank.id].usdToByn && (
+                                                <Typography variant="body2" color="text.secondary">
+                                                    USD → BYN: {bankRates[bank.id].usdToByn}
+                                                </Typography>
+                                            )}
+                                            {bankRates[bank.id].rubToByn && (
+                                                <Typography variant="body2" color="text.secondary">
+                                                    RUB → BYN: {bankRates[bank.id].rubToByn}
+                                                </Typography>
+                                            )}
+                                            {bankRates[bank.id].eurToByn && (
+                                                <Typography variant="body2" color="text.secondary">
+                                                    EUR → BYN: {bankRates[bank.id].eurToByn}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    )}
+                                </BankItem>
+                            ))}
+                            {banks.length === 0 && (
+                                <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
+                                    Банки не найдены.
+                                </Typography>
+                            )}
+                        </BankListContainer>
+                    </StyledPaper>
+                </LeftColumn>
+                <RightColumn>
+                    <StyledPaper elevation={1} isExchangeRates>
+                        <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
+                            Текущие курсы
+                        </Typography>
+                        <RateListContainer>
+                            {currentExchangeRates.map((rate, index) => {
+                                const nextRate = currentExchangeRates[index + 1];
+                                const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
+                                return (
+                                    <RateItem key={index} addExtraSpace={addExtraSpace}>
+                                        <Typography variant="body1">
+                                            {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
+                                        </Typography>
+                                        <Typography variant="body1" color="text.primary">
+                                            Банк: {bankMap[rate.bankId]?.name || 'Неизвестный банк'}
+                                        </Typography>
+                                    </RateItem>
+                                );
+                            })}
+                            {exchangeRates.length === 0 && (
+                                <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
+                                    Курсы не найдены.
+                                </Typography>
+                            )}
+                        </RateListContainer>
+                        {exchangeRates.length > 0 && (
+                            <PaginationContainer>
+                                <Pagination
+                                    count={totalPages}
+                                    page={currentPage}
+                                    onChange={handlePageChange}
+                                    color="primary"
+                                    shape="rounded"
+                                    size="small"
+                                />
+                            </PaginationContainer>
+                        )}
+                    </StyledPaper>
+                </RightColumn>
+            </MainContainer>
             <Footer>
                 <FooterLinks>
                     <FooterLink to="/">Converter</FooterLink>
@@ -410,7 +398,7 @@ function CurrencyConverter() {
                     © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
                 </Typography>
             </Footer>
-        </>
+        </MainContent>
     );
 }
 
