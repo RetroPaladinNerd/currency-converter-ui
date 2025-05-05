@@ -3,6 +3,7 @@ import {
     Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
     DialogTitle, TextField, Button, Pagination, Select, MenuItem, FormControl, InputLabel, Grid
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -72,15 +73,13 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    marginTop: theme.spacing(2),
-    width: '100vw',
-    boxSizing: 'border-box',
     borderTop: '1px solid #e0e0e0',
-    position: 'relative',
-    left: '50%',
-    right: '50%',
-    marginLeft: '-50vw',
-    marginRight: '-50vw',
+    width: '100vw',
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    boxSizing: 'border-box',
+    zIndex: 1000,
 }));
 
 const FooterLinks = styled(Box)({
@@ -90,12 +89,21 @@ const FooterLinks = styled(Box)({
     marginBottom: '10px',
 });
 
-const FooterLink = styled('a')({
+const FooterLink = styled(Link)({
     color: '#007aff',
     textDecoration: 'none',
     '&:hover': {
         textDecoration: 'underline',
     },
+});
+
+const MainContent = styled(Box)({
+    minHeight: '100vh',
+    paddingBottom: '100px', // Отступ для футера
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
 });
 
 function CurrencyList() {
@@ -258,17 +266,7 @@ function CurrencyList() {
 
     return (
         <>
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-                width: '100%',
-                overflowX: 'hidden',
-                paddingLeft: '0',
-                boxSizing: 'border-box',
-                minHeight: '100vh',
-                flexDirection: 'column',
-            }}>
+            <MainContent>
                 <Box sx={{
                     maxWidth: '900px',
                     width: '100%',
@@ -406,16 +404,16 @@ function CurrencyList() {
                         </Grid>
                     </Grid>
                 </Box>
-            </Box>
+            </MainContent>
             <Footer>
                 <FooterLinks>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
+                    <FooterLink to="/">Converter</FooterLink>
+                    <FooterLink to="/currencies">Currencies</FooterLink>
+                    <FooterLink to="/banks">Banks</FooterLink>
+                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
                 </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
+                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
                 </Typography>
             </Footer>
             <Dialog
