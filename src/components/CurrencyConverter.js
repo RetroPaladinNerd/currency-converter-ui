@@ -113,9 +113,10 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    width: '100%', // Ограничен контейнером MainContent
+    width: '100%',
+    minHeight: '60px', // Минимальная высота для заполнения пространства
     boxSizing: 'border-box',
-    marginTop: theme.spacing(2),
+    marginTop: 'auto', // Прижать футер к низу
     borderTop: '1px solid #e0e0e0',
     boxShadow: '0 -2px 8px rgba(0,0,0,0.05)',
 }));
@@ -140,6 +141,8 @@ const MainContent = styled(Box)({
     flexDirection: 'column',
     minHeight: '100vh',
     width: '100%',
+    padding: 0, // Убраны отступы
+    margin: 0, // Убраны внешние отступы
 });
 
 function CurrencyConverter() {
