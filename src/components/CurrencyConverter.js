@@ -15,7 +15,6 @@ const MainContainer = styled(Box)(({ theme }) => ({
     gap: theme.spacing(0.5),
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '1000px',
     margin: '0 auto',
     overflowX: 'hidden',
 }));
@@ -51,6 +50,7 @@ const StyledPaper = styled(Paper, {
     ...(!isExchangeRates && {
         flexGrow: 1,
     }),
+    width: '100%',
 }));
 
 const StyledFormBox = styled(Box)({
@@ -109,8 +109,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    marginTop: 'auto',
+    width: '100vw',
+    marginTop: theme.spacing(2),
 }));
 
 const FooterLinks = styled(Box)({

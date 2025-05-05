@@ -21,6 +21,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     '&:hover': {
         transform: 'translateY(-2px)',
     },
+    width: '100%',
 }));
 
 const StyledAddBox = styled(Box)({
@@ -56,8 +57,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    marginTop: 'auto',
+    width: '100vw',
+    marginTop: theme.spacing(2),
 }));
 
 const FooterLinks = styled(Box)({
@@ -245,4 +246,4 @@ function BankList() {
     );
 }
 
-export default BankList;    
+export default BankList;
