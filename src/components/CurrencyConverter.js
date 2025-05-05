@@ -114,12 +114,9 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw',
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
+    width: '100%',
+    marginTop: 'auto', // Прижать футер к низу
     boxSizing: 'border-box',
-    zIndex: 1000,
 }));
 
 const FooterLinks = styled(Box)({
