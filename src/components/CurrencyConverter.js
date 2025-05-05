@@ -15,9 +15,10 @@ const MainContainer = styled(Box)(({ theme }) => ({
     gap: theme.spacing(0.5),
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '100%', // Changed to full width
+    maxWidth: '100%', // Установлено на 100% для полной ширины
     margin: '0 auto',
     overflowX: 'hidden',
+    boxSizing: 'border-box', // Учитываем padding в ширине
 }));
 
 const LeftColumn = styled(Box)(({ theme }) => ({
@@ -25,12 +26,14 @@ const LeftColumn = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(1),
+    width: '100%', // Убедимся, что колонка растягивается
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
-    flex: 1, // Changed to flex to take available space
+    flex: 1, // Растягиваем колонку
     display: 'flex',
     flexDirection: 'column',
+    width: '100%', // Убедимся, что колонка растягивается
 }));
 
 const StyledPaper = styled(Paper, {
@@ -50,6 +53,8 @@ const StyledPaper = styled(Paper, {
     ...(!isExchangeRates && {
         flexGrow: 1,
     }),
+    width: '100%', // Карточки на всю ширину
+    boxSizing: 'border-box',
 }));
 
 const StyledFormBox = styled(Box)({
@@ -89,7 +94,7 @@ const RateListContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
-    marginBottom: theme.spacing(3), // Added spacing before footer
+    marginBottom: theme.spacing(3), // Отступ перед футером
 }));
 
 const BankListContainer = styled(Box)(({ theme }) => ({
@@ -109,8 +114,10 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    position: 'relative', // Changed from default to ensure it doesn't overlap
+    width: '100vw', // Футер на всю ширину экрана
+    position: 'relative', // Убедимся, что футер не перекрывает элементы
+    left: '0',
+    boxSizing: 'border-box',
 }));
 
 const FooterLinks = styled(Box)({
@@ -132,6 +139,7 @@ const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
+    width: '100%', // Убедимся, что основной контент на всю ширину
 });
 
 function CurrencyConverter() {
