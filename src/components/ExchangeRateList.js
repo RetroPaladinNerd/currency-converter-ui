@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Paper, Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
     DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Pagination
@@ -98,15 +98,7 @@ function ExchangeRateList() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
-
-    const fetchInitialData = async () => {
-        await Promise.all([fetchExchangeRates(), fetchBanks(), fetchCurrencies()]);
-    };
-
-    const fetchExchangeRates = async () => {
+    const fetchExchangeRates = useCallback(async () => {
         try {
             const data = await exchangeRateService.getAllExchangeRates();
             if (Array.isArray(data)) {
@@ -119,9 +111,9 @@ function ExchangeRateList() {
             console.error("Ошибка при получении обменных курсов:", error);
             setExchangeRates([]);
         }
-    };
+    }, []);
 
-    const fetchBanks = async () => {
+    const fetchBanks = useCallback(async () => {
         try {
             const data = await bankService.getAllBanks();
             if (Array.isArray(data)) {
@@ -141,9 +133,9 @@ function ExchangeRateList() {
             setBanks([]);
             setBankMap({});
         }
-    };
+    }, []);
 
-    const fetchCurrencies = async () => {
+    const fetchCurrencies = useCallback(async () => {
         try {
             const data = await currencyService.getAllCurrencies();
             if (Array.isArray(data)) {
@@ -156,7 +148,15 @@ function ExchangeRateList() {
             console.error("Ошибка при получении валют:", error);
             setCurrencies([]);
         }
-    };
+    }, []);
+
+    const fetchInitialData = useCallback(async () => {
+        await Promise.all([fetchExchangeRates(), fetchBanks(), fetchCurrencies()]);
+    }, [fetchExchangeRates, fetchBanks, fetchCurrencies]);
+
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
 
     const handleOpen = () => {
         setBankId('');

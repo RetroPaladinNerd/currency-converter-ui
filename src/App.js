@@ -123,7 +123,7 @@ const theme = createTheme({
     },
 });
 
-const drawerWidth = 200;
+//const drawerWidth = 200;
 
 const AppContainer = styled(Container)({
     display: 'flex',
