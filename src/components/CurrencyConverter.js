@@ -12,13 +12,13 @@ import currencyService from '../services/currencyService';
 
 const MainContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(2), // Увеличен gap для пространства между курсами и конвертером/банками
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '100%', // Установлено на 100% для полной ширины
+    maxWidth: '100%',
     margin: '0 auto',
     overflowX: 'hidden',
-    boxSizing: 'border-box', // Учитываем padding в ширине
+    boxSizing: 'border-box',
 }));
 
 const LeftColumn = styled(Box)(({ theme }) => ({
@@ -26,20 +26,20 @@ const LeftColumn = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(1),
-    width: '100%', // Убедимся, что колонка растягивается
+    width: '100%',
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
-    flex: 1, // Растягиваем колонку
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    width: '100%', // Убедимся, что колонка растягивается
+    width: '100%',
 }));
 
 const StyledPaper = styled(Paper, {
     shouldForwardProp: (prop) => prop !== 'isExchangeRates',
 })(({ theme, isExchangeRates }) => ({
-    padding: theme.spacing(2),
+    padding: theme.spacing(2.5), // Увеличен padding на 50 пикселей (2 -> 2.5 * 20px = 50px)
     borderRadius: '20px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     backgroundColor: theme.palette.background.paper,
@@ -53,7 +53,7 @@ const StyledPaper = styled(Paper, {
     ...(!isExchangeRates && {
         flexGrow: 1,
     }),
-    width: '100%', // Карточки на всю ширину
+    width: '100%',
     boxSizing: 'border-box',
 }));
 
@@ -94,7 +94,7 @@ const RateListContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
-    marginBottom: theme.spacing(3), // Отступ перед футером
+    marginBottom: theme.spacing(3),
 }));
 
 const BankListContainer = styled(Box)(({ theme }) => ({
@@ -114,10 +114,9 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw', // Футер на всю ширину экрана
-    position: 'relative', // Убедимся, что футер не перекрывает элементы
-    left: '0',
+    width: '100%', // Сделал как у карточек
     boxSizing: 'border-box',
+    marginTop: theme.spacing(2), // Добавлен небольшой отступ сверху
 }));
 
 const FooterLinks = styled(Box)({
@@ -139,7 +138,7 @@ const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    width: '100%', // Убедимся, что основной контент на всю ширину
+    width: '100%',
 });
 
 function CurrencyConverter() {
