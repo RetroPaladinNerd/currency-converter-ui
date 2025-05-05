@@ -15,7 +15,7 @@ const MainContainer = styled(Box)(({ theme }) => ({
     gap: theme.spacing(0.5),
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '1000px',
+    maxWidth: '100%', // Changed to full width
     margin: '0 auto',
     overflowX: 'hidden',
 }));
@@ -28,8 +28,7 @@ const LeftColumn = styled(Box)(({ theme }) => ({
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
-    width: '450px',
-    flexShrink: 0,
+    flex: 1, // Changed to flex to take available space
     display: 'flex',
     flexDirection: 'column',
 }));
@@ -90,6 +89,7 @@ const RateListContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
+    marginBottom: theme.spacing(3), // Added spacing before footer
 }));
 
 const BankListContainer = styled(Box)(({ theme }) => ({
@@ -110,7 +110,7 @@ const Footer = styled(Box)(({ theme }) => ({
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
     width: '100%',
-    marginTop: 'auto',
+    position: 'relative', // Changed from default to ensure it doesn't overlap
 }));
 
 const FooterLinks = styled(Box)({
