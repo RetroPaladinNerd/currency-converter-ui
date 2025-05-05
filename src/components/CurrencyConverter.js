@@ -3,6 +3,7 @@ import {
     Paper, Typography, Box, Select, MenuItem, TextField, Button, FormControl,
     InputLabel, Pagination, IconButton
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import exchangeRateService from '../services/exchangeRateService';
@@ -111,14 +112,9 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     marginTop: theme.spacing(2),
-    width: '100vw',
+    width: '100%',
     boxSizing: 'border-box',
     borderTop: '1px solid #e0e0e0',
-    position: 'relative',
-    left: '50%',
-    right: '50%',
-    marginLeft: '-50vw',
-    marginRight: '-50vw',
 }));
 
 const FooterLinks = styled(Box)({
@@ -128,7 +124,7 @@ const FooterLinks = styled(Box)({
     marginBottom: '10px',
 });
 
-const FooterLink = styled('a')({
+const FooterLink = styled(Link)({
     color: '#007aff',
     textDecoration: 'none',
     '&:hover': {
@@ -391,13 +387,13 @@ function CurrencyConverter() {
             </MainContainer>
             <Footer>
                 <FooterLinks>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
-                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
+                    <FooterLink to="/">Converter</FooterLink>
+                    <FooterLink to="/currencies">Currencies</FooterLink>
+                    <FooterLink to="/banks">Banks</FooterLink>
+                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
                 </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
+                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
                 </Typography>
             </Footer>
         </>
