@@ -75,7 +75,23 @@ const Footer = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(2),
     width: '100%',
     boxSizing: 'border-box',
+    borderTop: '1px solid #e0e0e0',
 }));
+
+const FooterLinks = styled(Box)({
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    marginBottom: '10px',
+});
+
+const FooterLink = styled('a')({
+    color: '#007aff',
+    textDecoration: 'none',
+    '&:hover': {
+        textDecoration: 'underline',
+    },
+});
 
 function CurrencyList() {
     const [currencies, setCurrencies] = useState([]);
@@ -233,14 +249,14 @@ function CurrencyList() {
             overflowX: 'hidden',
             paddingLeft: '0',
             boxSizing: 'border-box',
-            minHeight: '100vh', // Ensure footer stays at bottom
+            minHeight: '100vh',
             flexDirection: 'column',
         }}>
             <Box sx={{
                 maxWidth: '900px',
                 width: '100%',
                 margin: '0 auto',
-                flex: 1, // Allow footer to push content up
+                flex: 1,
             }}>
                 <Grid container spacing={2} sx={{
                     width: '100%',
@@ -374,8 +390,15 @@ function CurrencyList() {
                 </Grid>
             </Box>
             <Footer>
+                <FooterLinks>
+                    <FooterLink href="/">Home</FooterLink>
+                    <FooterLink href="/currencies">Currencies</FooterLink>
+                    <FooterLink href="/exchange-rates">Exchange Rates</FooterLink>
+                    <FooterLink href="/about">About</FooterLink>
+                    <FooterLink href="/contact">Contact</FooterLink>
+                </FooterLinks>
                 <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | <a href="https://example.com" target="_blank" rel="noopener noreferrer">Contact Us</a>
+                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
                 </Typography>
             </Footer>
             <Dialog open={open} onClose={handleClose} TransitionComponent={Fade} TransitionProps={{ timeout: 300}}>
