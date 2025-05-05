@@ -1,7 +1,7 @@
 // src/services/currencyService.js
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/currencies'; // Замените на свой URL
+const API_BASE_URL = 'https://currencyconverter-h92o.onrender.com/currencies'; // Замените на свой URL
 
 const currencyService = {
     getAllCurrencies: async () => {

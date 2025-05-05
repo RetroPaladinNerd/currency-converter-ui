@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/exchange-rates'; // Замените на свой URL
+const API_BASE_URL = 'https://currencyconverter-h92o.onrender.com/exchange-rates'; // Замените на свой URL
 
 const exchangeRateService = {
     getAllExchangeRates: async () => {
