@@ -123,8 +123,6 @@ const theme = createTheme({
     },
 });
 
-//const drawerWidth = 200;
-
 const AppContainer = styled(Container)({
     display: 'flex',
     minHeight: '100vh',
@@ -147,6 +145,36 @@ const MainContentContainer = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
 }));
 
+const Footer = styled(Box)(({ theme }) => ({
+    textAlign: 'center',
+    padding: theme.spacing(2),
+    backgroundColor: '#f5f5f5',
+    marginTop: theme.spacing(2),
+    width: '100vw',
+    boxSizing: 'border-box',
+    borderTop: '1px solid #e0e0e0',
+    position: 'relative',
+    left: '50%',
+    right: '50%',
+    marginLeft: '-50vw',
+    marginRight: '-50vw',
+}));
+
+const FooterLinks = styled(Box)({
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    marginBottom: '10px',
+});
+
+const FooterLink = styled('a')({
+    color: '#007aff',
+    textDecoration: 'none',
+    '&:hover': {
+        textDecoration: 'underline',
+    },
+});
+
 function App() {
     const [selectedTab, setSelectedTab] = useState('converter');
 
@@ -157,11 +185,22 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <AppContainer disableGutters>
-                <Sidebar onTabChange={handleTabChange} selectedTab={selectedTab} /> {/* Исправлено на onTabChange */}
+                <Sidebar onTabChange={handleTabChange} selectedTab={selectedTab} />
                 <MainContentContainer>
                     <MainContent selectedTab={selectedTab} />
                 </MainContentContainer>
             </AppContainer>
+            <Footer>
+                <FooterLinks>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
+                </FooterLinks>
+                <Typography variant="body2" color="textSecondary">
+                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
+                </Typography>
+            </Footer>
         </ThemeProvider>
     );
 }

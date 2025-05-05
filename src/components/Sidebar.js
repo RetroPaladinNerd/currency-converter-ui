@@ -1,12 +1,12 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, styled } from '@mui/material';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz'; // Тонкая иконка для конвертера
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'; // Тонкая иконка для банков
-import EuroIcon from '@mui/icons-material/Euro'; // Тонкая иконка для валют
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney'; // Тонкая иконка для курсов
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import EuroIcon from '@mui/icons-material/Euro';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const SidebarContainer = styled(Drawer)(({ theme }) => ({
-    width: 200, // Соответствует drawerWidth в App.js
+    width: 200,
     flexShrink: 0,
     '& .MuiDrawer-paper': {
         width: 200,

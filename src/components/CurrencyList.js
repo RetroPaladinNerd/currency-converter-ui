@@ -257,153 +257,155 @@ function CurrencyList() {
     };
 
     return (
-        <Box sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            width: '100%',
-            overflowX: 'hidden',
-            paddingLeft: '0',
-            boxSizing: 'border-box',
-            minHeight: '100vh',
-            flexDirection: 'column',
-        }}>
+        <>
             <Box sx={{
-                maxWidth: '900px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
                 width: '100%',
-                margin: '0 auto',
-                flex: 1,
+                overflowX: 'hidden',
+                paddingLeft: '0',
+                boxSizing: 'border-box',
+                minHeight: '100vh',
+                flexDirection: 'column',
             }}>
-                <Grid container spacing={2} sx={{
+                <Box sx={{
+                    maxWidth: '900px',
                     width: '100%',
-                    overflowX: 'hidden',
-                }} alignItems="flex-start" justifyContent="center">
-                    {/* Левая часть с валютами */}
-                    <Grid item xs={6}>
-                        <CurrencyListBox>
-                            <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
-                                Валюты
-                            </Typography>
-                            <ListWrapper>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    {Array.isArray(currentCurrencies) && currentCurrencies.map((currency, index) => (
-                                        <Fade in key={currency.id} timeout={300}>
-                                            <CurrencyItem
-                                                ref={el => (currencyRefs.current[index] = el)}
-                                                sx={{ minWidth: maxWidth, margin: '0 auto' }}
-                                            >
-                                                <Typography variant="body1">{`${currency.code} - ${currency.name}`}</Typography>
-                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                    <IconButton onClick={() => handleEditCurrency(currency)} size="small">
-                                                        <ModeEditOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                                    </IconButton>
-                                                    <IconButton onClick={() => handleDeleteCurrency(currency.id)} size="small">
-                                                        <DeleteOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                                    </IconButton>
-                                                </Box>
-                                            </CurrencyItem>
-                                        </Fade>
-                                    ))}
-                                    {Array.isArray(filteredCurrencies) && filteredCurrencies.length === 0 && currencies.length > 0 && (
-                                        <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                            Валюты по фильтру не найдены.
-                                        </Typography>
-                                    )}
-                                    {Array.isArray(currencies) && currencies.length === 0 && (
-                                        <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                            Валюты не добавлены.
-                                        </Typography>
-                                    )}
-                                    {!Array.isArray(currencies) && (
-                                        <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
-                                            Ошибка загрузки данных.
-                                        </Typography>
-                                    )}
-                                </Box>
-                            </ListWrapper>
-                            <StyledAddBox>
-                                <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
-                                    Добавить валюту
-                                </Button>
-                            </StyledAddBox>
-                            {filteredCurrencies.length > itemsPerPage && (
-                                <PaginationContainer>
-                                    <Pagination
-                                        count={totalPages}
-                                        page={currentPage}
-                                        onChange={handlePageChange}
-                                        color="primary"
-                                        shape="rounded"
-                                        size="small"
-                                    />
-                                </PaginationContainer>
-                            )}
-                        </CurrencyListBox>
+                    margin: '0 auto',
+                    flex: 1,
+                }}>
+                    <Grid container spacing={2} sx={{
+                        width: '100%',
+                        overflowX: 'hidden',
+                    }} alignItems="flex-start" justifyContent="center">
+                        {/* Левая часть с валютами */}
+                        <Grid item xs={6}>
+                            <CurrencyListBox>
+                                <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
+                                    Валюты
+                                </Typography>
+                                <ListWrapper>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                        {Array.isArray(currentCurrencies) && currentCurrencies.map((currency, index) => (
+                                            <Fade in key={currency.id} timeout={300}>
+                                                <CurrencyItem
+                                                    ref={el => (currencyRefs.current[index] = el)}
+                                                    sx={{ minWidth: maxWidth, margin: '0 auto' }}
+                                                >
+                                                    <Typography variant="body1">{`${currency.code} - ${currency.name}`}</Typography>
+                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                        <IconButton onClick={() => handleEditCurrency(currency)} size="small">
+                                                            <ModeEditOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => handleDeleteCurrency(currency.id)} size="small">
+                                                            <DeleteOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                                        </IconButton>
+                                                    </Box>
+                                                </CurrencyItem>
+                                            </Fade>
+                                        ))}
+                                        {Array.isArray(filteredCurrencies) && filteredCurrencies.length === 0 && currencies.length > 0 && (
+                                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                                                Валюты по фильтру не найдены.
+                                            </Typography>
+                                        )}
+                                        {Array.isArray(currencies) && currencies.length === 0 && (
+                                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                                                Валюты не добавлены.
+                                            </Typography>
+                                        )}
+                                        {!Array.isArray(currencies) && (
+                                            <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
+                                                Ошибка загрузки данных.
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </ListWrapper>
+                                <StyledAddBox>
+                                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                                        Добавить валюту
+                                    </Button>
+                                </StyledAddBox>
+                                {filteredCurrencies.length > itemsPerPage && (
+                                    <PaginationContainer>
+                                        <Pagination
+                                            count={totalPages}
+                                            page={currentPage}
+                                            onChange={handlePageChange}
+                                            color="primary"
+                                            shape="rounded"
+                                            size="small"
+                                        />
+                                    </PaginationContainer>
+                                )}
+                            </CurrencyListBox>
+                        </Grid>
+                        {/* Правая часть с фильтрами */}
+                        <Grid item xs={6}>
+                            <ControlsBox>
+                                <Typography variant="body2" sx={{ fontWeight: 700, mb: 2 }}>
+                                    Фильтр валют
+                                </Typography>
+                                <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
+                                    <InputLabel>Код валюты</InputLabel>
+                                    <Select
+                                        value={filterCode}
+                                        onChange={(e) => setFilterCode(e.target.value)}
+                                        label="Код валюты"
+                                    >
+                                        <MenuItem value="">Все</MenuItem>
+                                        {currencies.map((currency) => (
+                                            <MenuItem key={currency.id + '-code'} value={currency.code}>
+                                                {currency.code}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
+                                    <InputLabel>Название валюты</InputLabel>
+                                    <Select
+                                        value={filterName}
+                                        onChange={(e) => setFilterName(e.target.value)}
+                                        label="Название валюты"
+                                    >
+                                        <MenuItem value="">Все</MenuItem>
+                                        {currencies.map((currency) => (
+                                            <MenuItem key={currency.id + '-name'} value={currency.name}>
+                                                {currency.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <Typography variant="body2" sx={{ fontWeight: 700, mb: 2 }}>
+                                    Сортировка
+                                </Typography>
+                                <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
+                                    <InputLabel>Сортировать по</InputLabel>
+                                    <Select
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        label="Сортировать по"
+                                    >
+                                        <MenuItem value="code">Коду</MenuItem>
+                                        <MenuItem value="name">Названию</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth variant="outlined" size="small">
+                                    <InputLabel>Порядок</InputLabel>
+                                    <Select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        label="Порядок"
+                                    >
+                                        <MenuItem value="asc">По возрастанию (A-Z)</MenuItem>
+                                        <MenuItem value="desc">По убыванию (Z-A)</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </ControlsBox>
+                        </Grid>
                     </Grid>
-                    {/* Правая часть с фильтрами */}
-                    <Grid item xs={6}>
-                        <ControlsBox>
-                            <Typography variant="body2" sx={{ fontWeight: 700, mb: 2 }}>
-                                Фильтр валют
-                            </Typography>
-                            <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
-                                <InputLabel>Код валюты</InputLabel>
-                                <Select
-                                    value={filterCode}
-                                    onChange={(e) => setFilterCode(e.target.value)}
-                                    label="Код валюты"
-                                >
-                                    <MenuItem value="">Все</MenuItem>
-                                    {currencies.map((currency) => (
-                                        <MenuItem key={currency.id + '-code'} value={currency.code}>
-                                            {currency.code}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
-                                <InputLabel>Название валюты</InputLabel>
-                                <Select
-                                    value={filterName}
-                                    onChange={(e) => setFilterName(e.target.value)}
-                                    label="Название валюты"
-                                >
-                                    <MenuItem value="">Все</MenuItem>
-                                    {currencies.map((currency) => (
-                                        <MenuItem key={currency.id + '-name'} value={currency.name}>
-                                            {currency.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <Typography variant="body2" sx={{ fontWeight: 700, mb: 2 }}>
-                                Сортировка
-                            </Typography>
-                            <FormControl fullWidth variant="outlined" size="small" sx={{ mb: 2 }}>
-                                <InputLabel>Сортировать по</InputLabel>
-                                <Select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    label="Сортировать по"
-                                >
-                                    <MenuItem value="code">Коду</MenuItem>
-                                    <MenuItem value="name">Названию</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth variant="outlined" size="small">
-                                <InputLabel>Порядок</InputLabel>
-                                <Select
-                                    value={sortOrder}
-                                    onChange={(e) => setSortOrder(e.target.value)}
-                                    label="Порядок"
-                                >
-                                    <MenuItem value="asc">По возрастанию (A-Z)</MenuItem>
-                                    <MenuItem value="desc">По убыванию (Z-A)</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </ControlsBox>
-                    </Grid>
-                </Grid>
+                </Box>
             </Box>
             <Footer>
                 <FooterLinks>
@@ -424,8 +426,8 @@ function CurrencyList() {
                 sx={{
                     '& .MuiDialog-paper': {
                         width: '400px',
-                        minHeight: '280px',
-                        maxHeight: '280px',
+                        minHeight: '300px',
+                        maxHeight: '300px',
                         overflowY: 'auto',
                     },
                 }}
@@ -444,7 +446,7 @@ function CurrencyList() {
                         onChange={handleCodeChange}
                         size="small"
                         required
-                        inputProps={{ maxLength: 3 }} // Ограничение длины кода (например, 3 символа)
+                        inputProps={{ maxLength: 3 }} // Ограничение длины кода
                     />
                     <TextField
                         margin="dense"
@@ -475,7 +477,7 @@ function CurrencyList() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </>
     );
 }
 

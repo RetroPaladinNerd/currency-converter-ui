@@ -83,6 +83,36 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
+const Footer = styled(Box)(({ theme }) => ({
+    textAlign: 'center',
+    padding: theme.spacing(2),
+    backgroundColor: '#f5f5f5',
+    marginTop: theme.spacing(2),
+    width: '100vw',
+    boxSizing: 'border-box',
+    borderTop: '1px solid #e0e0e0',
+    position: 'relative',
+    left: '50%',
+    right: '50%',
+    marginLeft: '-50vw',
+    marginRight: '-50vw',
+}));
+
+const FooterLinks = styled(Box)({
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    marginBottom: '10px',
+});
+
+const FooterLink = styled('a')({
+    color: '#007aff',
+    textDecoration: 'none',
+    '&:hover': {
+        textDecoration: 'underline',
+    },
+});
+
 function ExchangeRateList() {
     const [exchangeRates, setExchangeRates] = useState([]);
     const [open, setOpen] = useState(false);
@@ -272,72 +302,85 @@ function ExchangeRateList() {
     };
 
     return (
-        <StyledPaper elevation={1}>
-            <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
-                Обменные курсы
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {Array.isArray(currentExchangeRates) && currentExchangeRates.map((exchangeRate) => {
-                    const bank = bankMap[exchangeRate.bankId];
-                    const bankName = bank ? bank.name : "Неизвестный банк";
-                    return (
-                        <Fade in key={exchangeRate.id} timeout={300}>
-                            <Box>
-                                <ExchangeRateItem>
-                                    <Box>
-                                        <Typography variant="body1">
-                                            <Typography component="span">{exchangeRate.fromCurrencyCode}</Typography>
-                                            {' → '}
-                                            <Typography component="span">{exchangeRate.toCurrencyCode}</Typography>
-                                            {`: ${exchangeRate.rate}`}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Банк: {bankName}
-                                        </Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', gap: 1 }}>
-                                        <IconButton onClick={() => handleEditExchangeRate(exchangeRate)} size="small">
-                                            <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDeleteExchangeRate(exchangeRate.id)} size="small">
-                                            <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                        </IconButton>
-                                    </Box>
-                                </ExchangeRateItem>
-                                <ChartContainer>
-                                    <Line data={getChartData(exchangeRate)} options={chartOptions} />
-                                </ChartContainer>
-                            </Box>
-                        </Fade>
-                    );
-                })}
-                {Array.isArray(exchangeRates) && exchangeRates.length === 0 && (
-                    <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                        Обменные курсы не найдены.
-                    </Typography>
+        <>
+            <StyledPaper elevation={1}>
+                <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
+                    Обменные курсы
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {Array.isArray(currentExchangeRates) && currentExchangeRates.map((exchangeRate) => {
+                        const bank = bankMap[exchangeRate.bankId];
+                        const bankName = bank ? bank.name : "Неизвестный банк";
+                        return (
+                            <Fade in key={exchangeRate.id} timeout={300}>
+                                <Box>
+                                    <ExchangeRateItem>
+                                        <Box>
+                                            <Typography variant="body1">
+                                                <Typography component="span">{exchangeRate.fromCurrencyCode}</Typography>
+                                                {' → '}
+                                                <Typography component="span">{exchangeRate.toCurrencyCode}</Typography>
+                                                {`: ${exchangeRate.rate}`}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Банк: {bankName}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <IconButton onClick={() => handleEditExchangeRate(exchangeRate)} size="small">
+                                                <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDeleteExchangeRate(exchangeRate.id)} size="small">
+                                                <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                            </IconButton>
+                                        </Box>
+                                    </ExchangeRateItem>
+                                    <ChartContainer>
+                                        <Line data={getChartData(exchangeRate)} options={chartOptions} />
+                                    </ChartContainer>
+                                </Box>
+                            </Fade>
+                        );
+                    })}
+                    {Array.isArray(exchangeRates) && exchangeRates.length === 0 && (
+                        <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                            Обменные курсы не найдены.
+                        </Typography>
+                    )}
+                    {!Array.isArray(exchangeRates) && (
+                        <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
+                            Ошибка загрузки данных.
+                        </Typography>
+                    )}
+                </Box>
+                <StyledAddBox>
+                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                        Добавить курс
+                    </Button>
+                </StyledAddBox>
+                {exchangeRates.length > itemsPerPage && (
+                    <PaginationContainer>
+                        <Pagination
+                            count={totalPages}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            color="primary"
+                            shape="rounded"
+                        />
+                    </PaginationContainer>
                 )}
-                {!Array.isArray(exchangeRates) && (
-                    <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
-                        Ошибка загрузки данных.
-                    </Typography>
-                )}
-            </Box>
-            <StyledAddBox>
-                <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
-                    Добавить курс
-                </Button>
-            </StyledAddBox>
-            {exchangeRates.length > itemsPerPage && (
-                <PaginationContainer>
-                    <Pagination
-                        count={totalPages}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        color="primary"
-                        shape="rounded"
-                    />
-                </PaginationContainer>
-            )}
+            </StyledPaper>
+            <Footer>
+                <FooterLinks>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/">Converter</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/currencies">Currencies</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/banks">Banks</FooterLink>
+                    <FooterLink href="https://currency-converter-ui-wccs.onrender.com/exchange-rates">Exchange Rates</FooterLink>
+                </FooterLinks>
+                <Typography variant="body2" color="textSecondary">
+                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
+                </Typography>
+            </Footer>
             <Dialog 
                 open={open} 
                 onClose={handleClose} 
@@ -410,7 +453,7 @@ function ExchangeRateList() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </StyledPaper>
+        </>
     );
 }
 
