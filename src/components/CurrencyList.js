@@ -157,6 +157,10 @@ function CurrencyList() {
     };
 
     const handleCreateCurrency = async () => {
+        if (!newCode.trim() || !newName.trim()) {
+            alert("Ошибка: Все поля должны быть заполнены.");
+            return;
+        }
         try {
             await currencyService.createCurrency(newCode, newName);
             fetchCurrencies();
@@ -168,6 +172,10 @@ function CurrencyList() {
     };
 
     const handleUpdateCurrency = async () => {
+        if (!newCode.trim() || !newName.trim()) {
+            alert("Ошибка: Все поля должны быть заполнены.");
+            return;
+        }
         try {
             await currencyService.updateCurrency(selectedCurrencyId, newCode, newName);
             fetchCurrencies();
@@ -360,7 +368,7 @@ function CurrencyList() {
                         autoFocus
                         margin="dense"
                         id="code"
-                        label="Код валютy"
+                        label="Код валюты"
                         type="text"
                         fullWidth
                         variant="outlined"
