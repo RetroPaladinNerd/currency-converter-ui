@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import MainContent from './components/MainContent';
 import CurrencyConverter from './components/CurrencyConverter';
 import BankList from './components/BankList';
 import CurrencyList from './components/CurrencyList';
