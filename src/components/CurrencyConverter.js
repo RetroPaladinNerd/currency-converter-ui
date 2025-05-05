@@ -113,12 +113,13 @@ const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
-    width: '100%',
-    minHeight: '60px', // Минимальная высота для заполнения пространства
-    boxSizing: 'border-box',
-    marginTop: 'auto', // Прижать футер к низу
     borderTop: '1px solid #e0e0e0',
-    boxShadow: '0 -2px 8px rgba(0,0,0,0.05)',
+    width: '100vw',
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    boxSizing: 'border-box',
+    zIndex: 1000,
 }));
 
 const FooterLinks = styled(Box)({
@@ -137,12 +138,13 @@ const FooterLink = styled(Link)({
 });
 
 const MainContent = styled(Box)({
+    minHeight: '100vh',
+    paddingBottom: '100px', // Отступ для футера
+    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh',
+    alignItems: 'center',
     width: '100%',
-    padding: 0, // Убраны отступы
-    margin: 0, // Убраны внешние отступы
 });
 
 function CurrencyConverter() {
