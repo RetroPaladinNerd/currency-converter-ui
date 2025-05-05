@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
-import { Container, Box } from '@mui/material';
+import { Container, Box, Typography } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './index.css';
 
