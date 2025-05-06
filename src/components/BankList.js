@@ -51,24 +51,13 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
-const MainContent = styled(Box)({
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    alignItems: 'center',
-    width: '100%',
-    boxSizing: 'border-box',
-});
-
 const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '83vw',
-    boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
+    width: '100%',
+    marginTop: 'auto',
 }));
 
 const FooterLinks = styled(Box)({
@@ -84,6 +73,12 @@ const FooterLink = styled(Link)({
     '&:hover': {
         textDecoration: 'underline',
     },
+});
+
+const MainContent = styled(Box)({
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
 });
 
 function BankList() {
@@ -250,4 +245,4 @@ function BankList() {
     );
 }
 
-export default BankList;
+export default BankList;    
