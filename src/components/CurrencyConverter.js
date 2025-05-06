@@ -102,10 +102,12 @@ const MainContent = styled(Box)({
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between', // Убеждаемся, что футер прижат к низу
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     boxSizing: 'border-box',
+    margin: 0,
+    padding: 0,
 });
 
 const MainContainer = styled(Box)(({ theme }) => ({
@@ -118,19 +120,21 @@ const MainContainer = styled(Box)(({ theme }) => ({
     marginBottom: theme.spacing(6),
     overflowX: 'hidden',
     boxSizing: 'border-box',
-    flexGrow: 1, // Занимает всё доступное пространство
-    minHeight: 'calc(100vh - 60px)', // Учитываем высоту футера (примерно 60px с padding)
+    flexGrow: 1,
+    minHeight: 'calc(100vh - 80px)', // Увеличиваем, чтобы учесть возможные отступы
 }));
 
 const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
-    padding: theme.spacing(3), // Увеличиваем внутренний отступ, чтобы покрыть зазор
+    padding: theme.spacing(4), // Увеличиваем padding для покрытия зазора
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
     width: '83vw',
     boxSizing: 'border-box',
     marginLeft: 'calc(-50vw + 50%)',
     marginRight: 'calc(-50vw + 50%)',
+    position: 'relative', // Убираем фиксирование, если оно мешает
+    bottom: 0,
 }));
 
 const FooterLinks = styled(Box)({
