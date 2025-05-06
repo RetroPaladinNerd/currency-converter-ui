@@ -54,9 +54,9 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
 const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh',
-    alignItems: 'center',
+    flexGrow: 1,
     width: '100%',
+    maxWidth: '900px',
     boxSizing: 'border-box',
 });
 
@@ -91,22 +91,25 @@ function BankList() {
     const [open, setOpen] = useState(false);
     const [newBankName, setNewBankName] = useState('');
     const [selectedBankId, setSelectedBankId] = useState(null);
-    const [editing, setEditing] = false;
+    const [editing, setEditing] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 5;
 
     useEffect(() => {
+        const fetchBanks = async () => {
+            try {
+                const data = await bankService.getAllBanks();
+                setBanks(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Ошибка при получении банков:", error);
+                setBanks([]);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchBanks();
     }, []);
-
-    const fetchBanks = async () => {
-        try {
-            const data = await bankService.getAllBanks();
-            setBanks(data);
-        } catch (error) {
-            console.error("Ошибка при получении банков:", error);
-        }
-    };
 
     const handleOpen = () => {
         setNewBankName('');
@@ -122,7 +125,8 @@ function BankList() {
     const handleCreateBank = async () => {
         try {
             await bankService.createBank(newBankName);
-            fetchBanks();
+            const data = await bankService.getAllBanks();
+            setBanks(Array.isArray(data) ? data : []);
             handleClose();
         } catch (error) {
             console.error("Ошибка при создании банка:", error);
@@ -133,7 +137,8 @@ function BankList() {
     const handleUpdateBank = async () => {
         try {
             await bankService.updateBank(selectedBankId, newBankName);
-            fetchBanks();
+            const data = await bankService.getAllBanks();
+            setBanks(Array.isArray(data) ? data : []);
             handleClose();
         } catch (error) {
             console.error("Ошибка при обновлении банка:", error);
@@ -144,7 +149,8 @@ function BankList() {
     const handleDeleteBank = async (id) => {
         try {
             await bankService.deleteBank(id);
-            fetchBanks();
+            const data = await bankService.getAllBanks();
+            setBanks(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Ошибка при удалении банка:", error);
             alert("Ошибка при удалении банка: " + error.message);
@@ -166,6 +172,10 @@ function BankList() {
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
+
+    if (loading) {
+        return <Typography align="center" sx={{ mt: 4 }}>Загрузка...</Typography>;
+    }
 
     return (
         <MainContent>

@@ -140,13 +140,13 @@ const MainContentContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     position: 'relative',
     overflowY: 'auto',
-    maxHeight: '100vh',
     boxSizing: 'border-box',
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
     backgroundColor: theme.palette.background.default,
+    minHeight: 'calc(100vh - 64px)', // Учитываем высоту Sidebar, если есть фиксированная высота
 }));
 
 function App() {
