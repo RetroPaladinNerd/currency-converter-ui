@@ -3,7 +3,6 @@ import {
     Paper, Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
     DialogTitle, TextField, Button, Pagination
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -59,30 +58,6 @@ const MainContent = styled(Box)({
     maxWidth: '900px',
     boxSizing: 'border-box',
     alignItems: 'center',
-});
-
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    boxSizing: 'border-box',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled(Link)({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
 });
 
 function BankList() {
@@ -221,17 +196,6 @@ function BankList() {
                     </PaginationContainer>
                 )}
             </StyledPaper>
-            <Footer>
-                <FooterLinks>
-                    <FooterLink to="/">Converter</FooterLink>
-                    <FooterLink to="/currencies">Currencies</FooterLink>
-                    <FooterLink to="/banks">Banks</FooterLink>
-                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                </FooterLinks>
-                <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                </Typography>
-            </Footer>
             <Dialog open={open} onClose={handleClose} TransitionComponent={Fade} TransitionProps={{ timeout: 300 }}>
                 <DialogTitle>{editing ? "Редактировать банк" : "Создать банк"}</DialogTitle>
                 <DialogContent>
