@@ -53,7 +53,7 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
 const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1,
+    minHeight: '100vh', // Устанавливаем минимальную высоту на 100% окна
     width: '100%',
     maxWidth: '900px',
     boxSizing: 'border-box',
@@ -61,11 +61,11 @@ const MainContent = styled(Box)({
 });
 
 const Footer = styled(Box)(({ theme }) => ({
-    marginTop: theme.spacing(4),
+    marginTop: 'auto', // Отодвигает футер вниз при наличии свободного пространства
     padding: theme.spacing(2),
     textAlign: 'center',
     backgroundColor: theme.palette.grey[200],
-    width: '100%',
+    width: '100%', // Устанавливаем ширину на 100%
     borderTop: '1px solid #e0e0e0',
 }));
 
