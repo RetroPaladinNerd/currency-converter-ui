@@ -118,7 +118,7 @@ const Footer = styled(Box)(({ theme }) => ({
     marginTop: 'auto',
     boxSizing: 'border-box',
     marginLeft: 'calc(-50vw + 50%)', // Устанавливаем футер на всю ширину экрана
-    marginRight: 'calc(50%)',
+    marginRight: 'calc(-50vw + 20%)',
 }));
 
 const FooterLinks = styled(Box)({
