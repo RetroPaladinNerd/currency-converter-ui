@@ -58,6 +58,7 @@ const MainContent = styled(Box)({
     width: '100%',
     maxWidth: '900px',
     boxSizing: 'border-box',
+    alignItems: 'center',
 });
 
 const Footer = styled(Box)(({ theme }) => ({
@@ -65,10 +66,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '83vw',
+    width: '100%',
     boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({

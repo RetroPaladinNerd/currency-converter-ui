@@ -129,6 +129,7 @@ const theme = createTheme({
 
 const AppContainer = styled(Container)({
     display: 'flex',
+    flexDirection: 'column',
     minHeight: '100vh',
     padding: 0,
     backgroundColor: theme.palette.background.default,
@@ -138,31 +139,36 @@ const AppContainer = styled(Container)({
 const MainContentContainer = styled(Box)(({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(2),
-    position: 'relative',
-    overflowY: 'auto',
     boxSizing: 'border-box',
     width: '100%',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'column',
+    alignItems: 'center',
     backgroundColor: theme.palette.background.default,
-    minHeight: 'calc(100vh - 64px)', // Учитываем высоту Sidebar, если есть фиксированная высота
 }));
+
+const SidebarAndContent = styled(Box)({
+    display: 'flex',
+    flexGrow: 1,
+    width: '100%',
+});
 
 function App() {
     return (
         <ThemeProvider theme={theme}>
             <Router>
                 <AppContainer disableGutters>
-                    <Sidebar />
-                    <MainContentContainer>
-                        <Routes>
-                            <Route path="/" element={<CurrencyConverter />} />
-                            <Route path="/banks" element={<BankList />} />
-                            <Route path="/currencies" element={<CurrencyList />} />
-                            <Route path="/exchange-rates" element={<ExchangeRateList />} />
-                        </Routes>
-                    </MainContentContainer>
+                    <SidebarAndContent>
+                        <Sidebar />
+                        <MainContentContainer>
+                            <Routes>
+                                <Route path="/" element={<CurrencyConverter />} />
+                                <Route path="/banks" element={<BankList />} />
+                                <Route path="/currencies" element={<CurrencyList />} />
+                                <Route path="/exchange-rates" element={<ExchangeRateList />} />
+                            </Routes>
+                        </MainContentContainer>
+                    </SidebarAndContent>
                 </AppContainer>
             </Router>
         </ThemeProvider>
