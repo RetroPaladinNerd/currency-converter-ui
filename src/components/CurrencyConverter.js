@@ -114,35 +114,11 @@ const MainContainer = styled(Box)(({ theme }) => ({
     width: '100%',
     maxWidth: '100%',
     margin: '0 auto',
-    marginBottom: theme.spacing(6), // Увеличенный отступ между MainContainer и футером
+    marginBottom: theme.spacing(6),
     overflowX: 'hidden',
     boxSizing: 'border-box',
     flexGrow: 1,
 }));
-
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '83vw',
-    boxSizing: 'border-box',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled(Link)({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-});
 
 function CurrencyConverter() {
     const [banks, setBanks] = useState([]);
@@ -396,17 +372,6 @@ function CurrencyConverter() {
                     </StyledPaper>
                 </RightColumn>
             </MainContainer>
-            <Footer>
-                <FooterLinks>
-                    <FooterLink to="/">Converter</FooterLink>
-                    <FooterLink to="/currencies">Currencies</FooterLink>
-                    <FooterLink to="/banks">Banks</FooterLink>
-                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                </FooterLinks>
-                <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                </Typography>
-            </Footer>
         </MainContent>
     );
 }

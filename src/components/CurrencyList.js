@@ -77,32 +77,6 @@ const MainContent = styled(Box)({
     alignItems: 'center',
 });
 
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '83vw',
-    boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled(Link)({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-});
-
 function CurrencyList() {
     const [currencies, setCurrencies] = useState([]);
     const [filteredCurrencies, setFilteredCurrencies] = useState([]);
@@ -193,7 +167,7 @@ function CurrencyList() {
 
     const handleCreateCurrency = async () => {
         if (!newCode.trim() || !newName.trim()) {
-            return; // Prevent submission if fields are incomplete
+            return;
         }
         try {
             await currencyService.createCurrency(newCode, newName);
@@ -207,7 +181,7 @@ function CurrencyList() {
 
     const handleUpdateCurrency = async () => {
         if (!newCode.trim() || !newName.trim()) {
-            return; // Prevent submission if fields are incomplete
+            return;
         }
         try {
             await currencyService.updateCurrency(selectedCurrencyId, newCode, newName);
@@ -250,7 +224,6 @@ function CurrencyList() {
 
     const isFormValid = newCode.trim() && newName.trim();
 
-    // Фильтрация ввода только букв
     const handleCodeChange = (e) => {
         const value = e.target.value.replace(/[^a-zA-Z]/g, '');
         setNewCode(value);
@@ -274,7 +247,6 @@ function CurrencyList() {
                         width: '100%',
                         overflowX: 'hidden',
                     }} alignItems="flex-start" justifyContent="center">
-                        {/* Левая часть с валютами */}
                         <Grid item xs={6}>
                             <CurrencyListBox>
                                 <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '16px' }}>
@@ -336,7 +308,6 @@ function CurrencyList() {
                                 )}
                             </CurrencyListBox>
                         </Grid>
-                        {/* Правая часть с фильтрами */}
                         <Grid item xs={6}>
                             <ControlsBox>
                                 <Typography variant="body2" sx={{ fontWeight: 700, mb: 2 }}>
@@ -401,17 +372,6 @@ function CurrencyList() {
                         </Grid>
                     </Grid>
                 </Box>
-                <Footer>
-                    <FooterLinks>
-                        <FooterLink to="/">Converter</FooterLink>
-                        <FooterLink to="/currencies">Currencies</FooterLink>
-                        <FooterLink to="/banks">Banks</FooterLink>
-                        <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                    </FooterLinks>
-                    <Typography variant="body2" color="textSecondary">
-                        © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                    </Typography>
-                </Footer>
             </MainContent>
             <Dialog
                 open={open}
@@ -441,7 +401,7 @@ function CurrencyList() {
                         onChange={handleCodeChange}
                         size="small"
                         required
-                        inputProps={{ maxLength: 3 }} // Ограничение длины кода
+                        inputProps={{ maxLength: 3 }}
                     />
                     <TextField
                         margin="dense"
