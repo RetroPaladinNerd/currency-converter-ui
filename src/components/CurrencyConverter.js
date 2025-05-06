@@ -15,8 +15,8 @@ const MainContainer = styled(Box)(({ theme }) => ({
     gap: theme.spacing(2),
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '100vw',
-    margin: '0',
+    maxWidth: '100%',
+    margin: '0 auto',
     overflowX: 'hidden',
     boxSizing: 'border-box',
 }));
@@ -117,6 +117,8 @@ const Footer = styled(Box)(({ theme }) => ({
     width: '100vw',
     marginTop: 'auto',
     boxSizing: 'border-box',
+    marginLeft: 'calc(-50vw + 50%)', // Устанавливаем футер на всю ширину экрана
+    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({
@@ -136,13 +138,11 @@ const FooterLink = styled(Link)({
 
 const MainContent = styled(Box)({
     minHeight: '100vh',
-    paddingBottom: '0',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100vw',
-    margin: '0',
+    width: '100%',
 });
 
 function CurrencyConverter() {
