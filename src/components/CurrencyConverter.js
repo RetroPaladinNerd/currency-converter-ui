@@ -99,10 +99,10 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
 }));
 
 const MainContent = styled(Box)({
-    minHeight: '100vh', // Занимает всю высоту viewport
+    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between', // Распределяет пространство между контентом и футером
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     boxSizing: 'border-box',
@@ -115,9 +115,10 @@ const MainContainer = styled(Box)(({ theme }) => ({
     width: '100%',
     maxWidth: '100%',
     margin: '0 auto',
+    marginBottom: theme.spacing(4), // Увеличенный отступ между MainContainer и футером
     overflowX: 'hidden',
     boxSizing: 'border-box',
-    flexGrow: 1, // Растягивает контейнер, чтобы занять доступное пространство
+    flexGrow: 1,
 }));
 
 const Footer = styled(Box)(({ theme }) => ({
@@ -125,11 +126,14 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '83vw', // Оставляем как есть
+    width: '83vw',
     boxSizing: 'border-box',
     marginLeft: 'calc(-50vw + 50%)',
     marginRight: 'calc(-50vw + 50%)',
+    position: 'sticky',
+    bottom: 0, // Прижимаем футер к нижнему краю
 }));
+
 const FooterLinks = styled(Box)({
     display: 'flex',
     justifyContent: 'center',
@@ -144,8 +148,6 @@ const FooterLink = styled(Link)({
         textDecoration: 'underline',
     },
 });
-
-
 
 function CurrencyConverter() {
     const [banks, setBanks] = useState([]);
