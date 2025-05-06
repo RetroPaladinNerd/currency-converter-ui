@@ -51,30 +51,6 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    marginTop: 'auto',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled(Link)({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-});
-
 const MainContent = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
@@ -207,17 +183,6 @@ function BankList() {
                     </PaginationContainer>
                 )}
             </StyledPaper>
-            <Footer>
-                <FooterLinks>
-                    <FooterLink to="/">Converter</FooterLink>
-                    <FooterLink to="/currencies">Currencies</FooterLink>
-                    <FooterLink to="/banks">Banks</FooterLink>
-                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                </FooterLinks>
-                <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                </Typography>
-            </Footer>
             <Dialog open={open} onClose={handleClose} TransitionComponent={Fade} TransitionProps={{ timeout: 300 }}>
                 <DialogTitle>{editing ? "Редактировать банк" : "Создать банк"}</DialogTitle>
                 <DialogContent>
@@ -245,4 +210,4 @@ function BankList() {
     );
 }
 
-export default BankList;    
+export default BankList;
