@@ -15,8 +15,8 @@ const MainContainer = styled(Box)(({ theme }) => ({
     gap: theme.spacing(2),
     padding: theme.spacing(1),
     width: '100%',
-    maxWidth: '100%',
-    margin: '0 auto',
+    maxWidth: '100vw',
+    margin: '0',
     overflowX: 'hidden',
     boxSizing: 'border-box',
 }));
@@ -114,8 +114,8 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100%',
-    marginTop: 'auto', // Прижать футер к низу
+    width: '100vw',
+    marginTop: 'auto',
     boxSizing: 'border-box',
 }));
 
@@ -136,12 +136,13 @@ const FooterLink = styled(Link)({
 
 const MainContent = styled(Box)({
     minHeight: '100vh',
-    paddingBottom: '100px', // Отступ для футера
+    paddingBottom: '0',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '100%',
+    width: '100vw',
+    margin: '0',
 });
 
 function CurrencyConverter() {
