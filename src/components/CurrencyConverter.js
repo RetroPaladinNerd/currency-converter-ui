@@ -138,37 +138,31 @@ function CurrencyConverter() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(1); // Initial value, will be calculated
     const [leftColumnHeight, setLeftColumnHeight] = useState(0);
+    const [availableFromCurrencies, setAvailableFromCurrencies] = useState([]);
+    const [availableToCurrencies, setAvailableToCurrencies] = useState([]);
 
     const leftColumnRef = useRef(null);
     const rateListRef = useRef(null);
-    const rateItemRefs = useRef([]);
+    const rateItemRef = useRef(null);
 
     const calculateHeights = useCallback(() => {
-        if (leftColumnRef.current && rateListRef.current && rateItemRefs.current.length > 0) {
+        if (leftColumnRef.current && rateListRef.current && rateItemRef.current) {
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
             const rateListHeight = leftHeight;
-            const rateItemHeight = rateItemRefs.current[0].getBoundingClientRect().height;
+            const rateItemHeight = rateItemRef.current.getBoundingClientRect().height;
+            const marginBottom = 4; // theme.spacing(0.5) = 4px
+            const totalItemHeight = rateItemHeight + marginBottom; // Include margin in calculation
             const titleHeight = 40; // Approximate height of the title and padding
             const paginationHeight = 40; // Approximate height of pagination
             const availableHeight = rateListHeight - titleHeight - paginationHeight;
-            const calculatedItems = Math.floor(availableHeight / rateItemHeight);
+            const calculatedItems = Math.floor(availableHeight / totalItemHeight);
             const newItemsPerPage = Math.max(1, calculatedItems); // Ensure at least 1 item
             setItemsPerPage(newItemsPerPage);
             setCurrentPage(1); // Reset to first page when items per page changes
         }
     }, []);
-
-    const isItemFullyVisible = (itemIndex) => {
-        if (!rateListRef.current || !rateItemRefs.current[itemIndex]) return false;
-        const listRect = rateListRef.current.getBoundingClientRect();
-        const itemRect = rateItemRefs.current[itemIndex].getBoundingClientRect();
-        return (
-            itemRect.top >= listRect.top &&
-            itemRect.bottom <= listRect.bottom
-        );
-    };
 
     useEffect(() => {
         fetchInitialData();
@@ -178,23 +172,6 @@ function CurrencyConverter() {
         calculateHeights();
         const resizeObserver = new ResizeObserver(() => {
             calculateHeights();
-            // Check visibility after resize
-            const visibleIndices = rateItemRefs.current.map((_, index) => index).filter(index => isItemFullyVisible(index));
-            if (visibleIndices.length < rateItemRefs.current.length) {
-                const fullyVisibleRates = currentExchangeRates.filter((_, index) => visibleIndices.includes(index));
-                setExchangeRates(prevRates => {
-                    const updatedRates = [...prevRates];
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    for (let i = 0; i < itemsPerPage; i++) {
-                        const globalIndex = startIndex + i;
-                        if (globalIndex < updatedRates.length && !visibleIndices.includes(i)) {
-                            updatedRates.splice(globalIndex, 1);
-                        }
-                    }
-                    return updatedRates;
-                });
-                setCurrentPage(1); // Reset to first page if items are filtered
-            }
         });
         if (leftColumnRef.current) {
             resizeObserver.observe(leftColumnRef.current);
@@ -204,7 +181,31 @@ function CurrencyConverter() {
                 resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateHeights, banks, exchangeRates, currentPage, itemsPerPage]);
+    }, [calculateHeights, banks, exchangeRates]);
+
+    useEffect(() => {
+        if (!bank) {
+            setAvailableFromCurrencies([]);
+            setAvailableToCurrencies([]);
+            return;
+        }
+
+        // Filter available currencies for the selected bank
+        const ratesForBank = exchangeRates.filter(rate => rate.bankId === bank);
+        const fromCurrencies = [...new Set(ratesForBank.map(rate => rate.fromCurrencyCode))];
+        const toCurrencies = [...new Set(ratesForBank.map(rate => rate.toCurrencyCode))];
+
+        setAvailableFromCurrencies(fromCurrencies);
+        setAvailableToCurrencies(toCurrencies);
+
+        // Reset selected currencies if they are not available in the new bank
+        if (!fromCurrencies.includes(fromCurrency)) {
+            setFromCurrency(fromCurrencies[0] || '');
+        }
+        if (!toCurrencies.includes(toCurrency)) {
+            setToCurrency(toCurrencies[0] || '');
+        }
+    }, [bank, exchangeRates, fromCurrency, toCurrency]);
 
     const fetchInitialData = async () => {
         try {
@@ -311,7 +312,7 @@ function CurrencyConverter() {
                                 </Select>
                             </FormControl>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <FormControl fullWidth variant="outlined" size="small">
+                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank}>
                                     <InputLabel id="from-currency-select-label">Из валюты</InputLabel>
                                     <Select
                                         labelId="from-currency-select-label"
@@ -320,15 +321,15 @@ function CurrencyConverter() {
                                         label="Из валюты"
                                         onChange={(e) => setFromCurrency(e.target.value)}
                                     >
-                                        {currencies.map((currency) => (
-                                            <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
+                                        {availableFromCurrencies.map((currency) => (
+                                            <MenuItem key={currency} value={currency}>{currency}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                                 <IconButton onClick={handleSwapCurrencies} sx={{ p: 0 }}>
                                     <SwapVertIcon />
                                 </IconButton>
-                                <FormControl fullWidth variant="outlined" size="small">
+                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank}>
                                     <InputLabel id="to-currency-select-label">В валюту</InputLabel>
                                     <Select
                                         labelId="to-currency-select-label"
@@ -337,8 +338,8 @@ function CurrencyConverter() {
                                         label="В валюту"
                                         onChange={(e) => setToCurrency(e.target.value)}
                                     >
-                                        {currencies.map((currency) => (
-                                            <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
+                                        {availableToCurrencies.map((currency) => (
+                                            <MenuItem key={currency} value={currency}>{currency}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
@@ -400,11 +401,11 @@ function CurrencyConverter() {
                     </StyledPaper>
                 </LeftColumn>
                 <RightColumn>
-                    <StyledPaper elevation={1} isExchangeRates adjustedHeight={leftColumnHeight} ref={rateListRef}>
+                    <StyledPaper elevation={1} isExchangeRates adjustedHeight={leftColumnHeight}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Текущие курсы
                         </Typography>
-                        <RateListContainer>
+                        <RateListContainer ref={rateListRef}>
                             {currentExchangeRates.map((rate, index) => {
                                 const nextRate = currentExchangeRates[index + 1];
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
@@ -412,7 +413,7 @@ function CurrencyConverter() {
                                     <RateItem
                                         key={index}
                                         addExtraSpace={addExtraSpace}
-                                        ref={el => (rateItemRefs.current[index] = el)}
+                                        ref={index === 0 ? rateItemRef : null}
                                     >
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
