@@ -145,7 +145,7 @@ function CurrencyConverter() {
     const rateListRef = useRef(null);
     const rateItemRefs = useRef([]);
 
-    const calculateInitialItemsPerPage = useCallback(() => {
+    const calculateItemsPerPage = useCallback(() => {
         if (leftColumnRef.current && rateListRef.current && rateItemRefs.current[0]) {
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
@@ -157,48 +157,34 @@ function CurrencyConverter() {
             const titleHeight = 40; // Approximate height of the title and padding
             const paginationHeight = 40; // Approximate height of pagination
             const availableHeight = rateListHeight - titleHeight - paginationHeight;
-            const calculatedItems = Math.floor(availableHeight / totalItemHeight);
-            const newItemsPerPage = Math.max(1, calculatedItems); // Ensure at least 1 item
+
+            // Calculate how many items fit without clipping
+            let visibleItems = 0;
+            let currentHeight = 0;
+
+            for (let i = 0; i < exchangeRates.length; i++) {
+                currentHeight += totalItemHeight;
+                if (currentHeight <= availableHeight) {
+                    visibleItems++;
+                } else {
+                    break;
+                }
+            }
+
+            const newItemsPerPage = Math.max(1, visibleItems); // Ensure at least 1 item
             setItemsPerPage(newItemsPerPage);
             setCurrentPage(1); // Reset to first page when items per page changes
         }
-    }, []);
-
-    const adjustItemsPerPage = useCallback(() => {
-        if (!rateListRef.current || !rateItemRefs.current.length) return;
-
-        const listRect = rateListRef.current.getBoundingClientRect();
-        let visibleItems = 0;
-
-        for (let i = 0; i < rateItemRefs.current.length; i++) {
-            if (!rateItemRefs.current[i]) continue;
-            const itemRect = rateItemRefs.current[i].getBoundingClientRect();
-            const isFullyVisible = (
-                itemRect.top >= listRect.top &&
-                itemRect.bottom <= listRect.bottom
-            );
-            if (isFullyVisible) {
-                visibleItems++;
-            } else {
-                break; // Stop counting once we find the first non-fully visible item
-            }
-        }
-
-        if (visibleItems !== itemsPerPage && visibleItems > 0) {
-            setItemsPerPage(visibleItems);
-            setCurrentPage(1); // Reset to first page when items per page changes
-        }
-    }, [itemsPerPage]);
+    }, [exchangeRates]);
 
     useEffect(() => {
         fetchInitialData();
     }, []);
 
     useEffect(() => {
-        calculateInitialItemsPerPage();
+        calculateItemsPerPage();
         const resizeObserver = new ResizeObserver(() => {
-            calculateInitialItemsPerPage();
-            adjustItemsPerPage();
+            calculateItemsPerPage();
         });
         if (leftColumnRef.current) {
             resizeObserver.observe(leftColumnRef.current);
@@ -208,11 +194,7 @@ function CurrencyConverter() {
                 resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateInitialItemsPerPage, adjustItemsPerPage, banks, exchangeRates]);
-
-    useEffect(() => {
-        adjustItemsPerPage();
-    }, [currentExchangeRates, adjustItemsPerPage]);
+    }, [calculateItemsPerPage, banks, exchangeRates]);
 
     useEffect(() => {
         if (!bank) {
