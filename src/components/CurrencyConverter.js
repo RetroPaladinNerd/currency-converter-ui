@@ -138,7 +138,7 @@ const FooterLink = styled(Link)({
 
 const MainContent = styled(Box)({
     minHeight: '100vh',
-    paddingBottom: '20px', // Отступ между данными и футером
+    paddingBottom: '40px', // Увеличенный отступ между данными и футером
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
