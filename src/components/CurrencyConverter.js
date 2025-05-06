@@ -87,7 +87,7 @@ const RateListContainer = styled(Box)(({ theme }) => ({
     gap: 0,
     marginBottom: theme.spacing(3),
     flexGrow: 1,
-    overflowY: 'auto',
+    overflow: 'hidden',
 }));
 
 const BankListContainer = styled(Box)(({ theme }) => ({
@@ -136,15 +136,31 @@ function CurrencyConverter() {
     const [bankMap, setBankMap] = useState({});
     const [bankRates, setBankRates] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(1); // Initial value, will be calculated
     const [leftColumnHeight, setLeftColumnHeight] = useState(0);
-    const itemsPerPage = 7;
 
     const leftColumnRef = useRef(null);
+    const rateListRef = useRef(null);
+    const rateItemRef = useRef(null);
 
-    const calculateLeftColumnHeight = useCallback(() => {
+    const calculateHeights = useCallback(() => {
+        // Calculate the height of the LeftColumn
         if (leftColumnRef.current) {
             const height = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(height);
+        }
+
+        // Calculate itemsPerPage based on the height of the rate list card
+        if (rateListRef.current && rateItemRef.current) {
+            const rateListHeight = leftColumnRef.current.getBoundingClientRect().height;
+            const rateItemHeight = rateItemRef.current.getBoundingClientRect().height;
+            const titleHeight = 40; // Approximate height of the title and padding
+            const paginationHeight = 40; // Approximate height of pagination
+            const availableHeight = rateListHeight - titleHeight - paginationHeight;
+            const calculatedItems = Math.floor(availableHeight / rateItemHeight);
+            const newItemsPerPage = Math.max(1, calculatedItems); // Ensure at least 1 item
+            setItemsPerPage(newItemsPerPage);
+            setCurrentPage(1); // Reset to first page when items per page changes
         }
     }, []);
 
@@ -153,9 +169,9 @@ function CurrencyConverter() {
     }, []);
 
     useEffect(() => {
-        calculateLeftColumnHeight();
+        calculateHeights();
         const resizeObserver = new ResizeObserver(() => {
-            calculateLeftColumnHeight();
+            calculateHeights();
         });
         if (leftColumnRef.current) {
             resizeObserver.observe(leftColumnRef.current);
@@ -165,7 +181,7 @@ function CurrencyConverter() {
                 resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateLeftColumnHeight, banks, exchangeRates]);
+    }, [calculateHeights, banks, exchangeRates]);
 
     const fetchInitialData = async () => {
         try {
@@ -361,7 +377,7 @@ function CurrencyConverter() {
                     </StyledPaper>
                 </LeftColumn>
                 <RightColumn>
-                    <StyledPaper elevation={1} isExchangeRates adjustedHeight={leftColumnHeight}>
+                    <StyledPaper elevation={1} isExchangeRates adjustedHeight={leftColumnHeight} ref={rateListRef}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Текущие курсы
                         </Typography>
@@ -370,7 +386,11 @@ function CurrencyConverter() {
                                 const nextRate = currentExchangeRates[index + 1];
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
                                 return (
-                                    <RateItem key={index} addExtraSpace={addExtraSpace}>
+                                    <RateItem
+                                        key={index}
+                                        addExtraSpace={addExtraSpace}
+                                        ref={index === 0 ? rateItemRef : null}
+                                    >
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
                                         </Typography>
