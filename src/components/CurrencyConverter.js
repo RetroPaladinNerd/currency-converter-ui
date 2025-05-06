@@ -117,7 +117,8 @@ const Footer = styled(Box)(({ theme }) => ({
     width: '83vw',
     marginTop: 'auto',
     boxSizing: 'border-box',
-
+    marginLeft: 'calc(-50vw + 50%)',
+    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({
@@ -137,6 +138,7 @@ const FooterLink = styled(Link)({
 
 const MainContent = styled(Box)({
     minHeight: '100vh',
+    paddingBottom: '20px', // Отступ между данными и футером
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
