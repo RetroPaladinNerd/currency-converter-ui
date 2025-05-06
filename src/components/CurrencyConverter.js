@@ -141,15 +141,15 @@ function CurrencyConverter() {
 
     const leftColumnRef = useRef(null);
     const rateListRef = useRef(null);
-    const rateItemRef = useRef(null);
+    const rateItemRefs = useRef([]);
 
     const calculateHeights = useCallback(() => {
-        if (leftColumnRef.current && rateListRef.current && rateItemRef.current) {
+        if (leftColumnRef.current && rateListRef.current && rateItemRefs.current.length > 0) {
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
             const rateListHeight = leftHeight;
-            const rateItemHeight = rateItemRef.current.getBoundingClientRect().height;
+            const rateItemHeight = rateItemRefs.current[0].getBoundingClientRect().height;
             const titleHeight = 40; // Approximate height of the title and padding
             const paginationHeight = 40; // Approximate height of pagination
             const availableHeight = rateListHeight - titleHeight - paginationHeight;
@@ -160,10 +160,10 @@ function CurrencyConverter() {
         }
     }, []);
 
-    const isItemFullyVisible = (itemRef) => {
-        if (!rateListRef.current || !itemRef.current) return false;
+    const isItemFullyVisible = (itemIndex) => {
+        if (!rateListRef.current || !rateItemRefs.current[itemIndex]) return false;
         const listRect = rateListRef.current.getBoundingClientRect();
-        const itemRect = itemRef.current.getBoundingClientRect();
+        const itemRect = rateItemRefs.current[itemIndex].getBoundingClientRect();
         return (
             itemRect.top >= listRect.top &&
             itemRect.bottom <= listRect.bottom
@@ -178,6 +178,23 @@ function CurrencyConverter() {
         calculateHeights();
         const resizeObserver = new ResizeObserver(() => {
             calculateHeights();
+            // Check visibility after resize
+            const visibleIndices = rateItemRefs.current.map((_, index) => index).filter(index => isItemFullyVisible(index));
+            if (visibleIndices.length < rateItemRefs.current.length) {
+                const fullyVisibleRates = currentExchangeRates.filter((_, index) => visibleIndices.includes(index));
+                setExchangeRates(prevRates => {
+                    const updatedRates = [...prevRates];
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+                    for (let i = 0; i < itemsPerPage; i++) {
+                        const globalIndex = startIndex + i;
+                        if (globalIndex < updatedRates.length && !visibleIndices.includes(i)) {
+                            updatedRates.splice(globalIndex, 1);
+                        }
+                    }
+                    return updatedRates;
+                });
+                setCurrentPage(1); // Reset to first page if items are filtered
+            }
         });
         if (leftColumnRef.current) {
             resizeObserver.observe(leftColumnRef.current);
@@ -187,7 +204,7 @@ function CurrencyConverter() {
                 resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateHeights, banks, exchangeRates]);
+    }, [calculateHeights, banks, exchangeRates, currentPage, itemsPerPage]);
 
     const fetchInitialData = async () => {
         try {
@@ -391,19 +408,11 @@ function CurrencyConverter() {
                             {currentExchangeRates.map((rate, index) => {
                                 const nextRate = currentExchangeRates[index + 1];
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
-                                const itemRef = React.createRef();
-                                useEffect(() => {
-                                    if (itemRef.current && !isItemFullyVisible(itemRef)) {
-                                        const updatedRates = currentExchangeRates.filter((_, i) => i !== index);
-                                        setCurrentPage(1); // Reset to first page if items are filtered
-                                        setExchangeRates(prevRates => prevRates.filter((_, i) => i !== indexOfFirstItem + index));
-                                    }
-                                }, [itemRef, rateListRef]);
                                 return (
                                     <RateItem
                                         key={index}
                                         addExtraSpace={addExtraSpace}
-                                        ref={index === 0 ? rateItemRef : itemRef}
+                                        ref={el => (rateItemRefs.current[index] = el)}
                                     >
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
