@@ -60,6 +60,15 @@ const MainContent = styled(Box)({
     alignItems: 'center',
 });
 
+const Footer = styled(Box)(({ theme }) => ({
+    marginTop: theme.spacing(4),
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    backgroundColor: theme.palette.grey[200],
+    width: '100%',
+    borderTop: '1px solid #e0e0e0',
+}));
+
 function BankList() {
     const [banks, setBanks] = useState([]);
     const [open, setOpen] = useState(false);
@@ -219,6 +228,11 @@ function BankList() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Footer>
+                <Typography variant="body2" color="textSecondary">
+                    Связаться со мной: <a href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">@insolitudeallalone</a>
+                </Typography>
+            </Footer>
         </MainContent>
     );
 }
