@@ -143,15 +143,15 @@ function CurrencyConverter() {
 
     const leftColumnRef = useRef(null);
     const rateListRef = useRef(null);
-    const rateItemRef = useRef(null);
+    const rateItemRefs = useRef([]);
 
-    const calculateHeights = useCallback(() => {
-        if (leftColumnRef.current && rateListRef.current && rateItemRef.current) {
+    const calculateInitialItemsPerPage = useCallback(() => {
+        if (leftColumnRef.current && rateListRef.current && rateItemRefs.current[0]) {
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
             const rateListHeight = leftHeight;
-            const rateItemHeight = rateItemRef.current.getBoundingClientRect().height;
+            const rateItemHeight = rateItemRefs.current[0].getBoundingClientRect().height;
             const marginBottom = 4; // theme.spacing(0.5) = 4px
             const totalItemHeight = rateItemHeight + marginBottom; // Include margin in calculation
             const titleHeight = 40; // Approximate height of the title and padding
@@ -164,14 +164,41 @@ function CurrencyConverter() {
         }
     }, []);
 
+    const adjustItemsPerPage = useCallback(() => {
+        if (!rateListRef.current || !rateItemRefs.current.length) return;
+
+        const listRect = rateListRef.current.getBoundingClientRect();
+        let visibleItems = 0;
+
+        for (let i = 0; i < rateItemRefs.current.length; i++) {
+            if (!rateItemRefs.current[i]) continue;
+            const itemRect = rateItemRefs.current[i].getBoundingClientRect();
+            const isFullyVisible = (
+                itemRect.top >= listRect.top &&
+                itemRect.bottom <= listRect.bottom
+            );
+            if (isFullyVisible) {
+                visibleItems++;
+            } else {
+                break; // Stop counting once we find the first non-fully visible item
+            }
+        }
+
+        if (visibleItems !== itemsPerPage && visibleItems > 0) {
+            setItemsPerPage(visibleItems);
+            setCurrentPage(1); // Reset to first page when items per page changes
+        }
+    }, [itemsPerPage]);
+
     useEffect(() => {
         fetchInitialData();
     }, []);
 
     useEffect(() => {
-        calculateHeights();
+        calculateInitialItemsPerPage();
         const resizeObserver = new ResizeObserver(() => {
-            calculateHeights();
+            calculateInitialItemsPerPage();
+            adjustItemsPerPage();
         });
         if (leftColumnRef.current) {
             resizeObserver.observe(leftColumnRef.current);
@@ -181,7 +208,11 @@ function CurrencyConverter() {
                 resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateHeights, banks, exchangeRates]);
+    }, [calculateInitialItemsPerPage, adjustItemsPerPage, banks, exchangeRates]);
+
+    useEffect(() => {
+        adjustItemsPerPage();
+    }, [currentExchangeRates, adjustItemsPerPage]);
 
     useEffect(() => {
         if (!bank) {
@@ -413,7 +444,7 @@ function CurrencyConverter() {
                                     <RateItem
                                         key={index}
                                         addExtraSpace={addExtraSpace}
-                                        ref={index === 0 ? rateItemRef : null}
+                                        ref={el => (rateItemRefs.current[index] = el)}
                                     >
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
