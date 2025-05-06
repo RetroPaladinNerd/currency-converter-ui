@@ -85,6 +85,8 @@ function CurrencyList() {
     const [sortBy, setSortBy] = useState('code');
     const [sortOrder, setSortOrder] = useState('asc');
     const [open, setOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [currencyToDelete, setCurrencyToDelete] = useState(null);
     const [newCode, setNewCode] = useState('');
     const [newName, setNewName] = useState('');
     const [selectedCurrencyId, setSelectedCurrencyId] = useState(null);
@@ -193,15 +195,25 @@ function CurrencyList() {
         }
     };
 
-    const handleDeleteCurrency = async (id) => {
-        if (window.confirm("Вы уверены, что хотите удалить эту валюту?")) {
-            try {
-                await currencyService.deleteCurrency(id);
-                fetchCurrencies();
-            } catch (error) {
-                console.error("Ошибка при удалении валюты:", error);
-                alert("Ошибка при удалении валюты: " + error.message);
-            }
+    const handleOpenDeleteDialog = (currency) => {
+        setCurrencyToDelete(currency);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setCurrencyToDelete(null);
+    };
+
+    const handleDeleteCurrency = async () => {
+        if (!currencyToDelete) return;
+        try {
+            await currencyService.deleteCurrency(currencyToDelete.id);
+            fetchCurrencies();
+            handleCloseDeleteDialog();
+        } catch (error) {
+            console.error("Ошибка при удалении валюты:", error);
+            alert("Ошибка при удалении валюты: " + error.message);
         }
     };
 
@@ -265,7 +277,7 @@ function CurrencyList() {
                                                         <IconButton onClick={() => handleEditCurrency(currency)} size="small">
                                                             <ModeEditOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                         </IconButton>
-                                                        <IconButton onClick={() => handleDeleteCurrency(currency.id)} size="small">
+                                                        <IconButton onClick={() => handleOpenDeleteDialog(currency)} size="small">
                                                             <DeleteOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                         </IconButton>
                                                     </Box>
@@ -430,6 +442,23 @@ function CurrencyList() {
                     >
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 300 }}
+            >
+                <DialogTitle>Подтверждение удаления</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Вы уверены, что хотите удалить валюту "{currencyToDelete?.code} - {currencyToDelete?.name}"?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
+                    <Button onClick={handleDeleteCurrency} color="primary">Удалить</Button>
                 </DialogActions>
             </Dialog>
         </>

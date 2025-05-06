@@ -95,6 +95,8 @@ const MainContent = styled(Box)({
 function ExchangeRateList() {
     const [exchangeRates, setExchangeRates] = useState([]);
     const [open, setOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [exchangeRateToDelete, setExchangeRateToDelete] = useState(null);
     const [selectedExchangeRateId, setSelectedExchangeRateId] = useState(null);
     const [editing, setEditing] = useState(false);
     const [banks, setBanks] = useState([]);
@@ -203,10 +205,22 @@ function ExchangeRateList() {
         }
     };
 
-    const handleDeleteExchangeRate = async (id) => {
+    const handleOpenDeleteDialog = (exchangeRate) => {
+        setExchangeRateToDelete(exchangeRate);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setExchangeRateToDelete(null);
+    };
+
+    const handleDeleteExchangeRate = async () => {
+        if (!exchangeRateToDelete) return;
         try {
-            await exchangeRateService.deleteExchangeRate(id);
+            await exchangeRateService.deleteExchangeRate(exchangeRateToDelete.id);
             fetchInitialData();
+            handleCloseDeleteDialog();
         } catch (error) {
             console.error("Ошибка при удалении обменного курса:", error);
             alert("Ошибка при удалении обменного курса: " + (error.response?.data?.message || error.message));
@@ -310,7 +324,7 @@ function ExchangeRateList() {
                                                 <IconButton onClick={() => handleEditExchangeRate(exchangeRate)} size="small">
                                                     <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                 </IconButton>
-                                                <IconButton onClick={() => handleDeleteExchangeRate(exchangeRate.id)} size="small">
+                                                <IconButton onClick={() => handleOpenDeleteDialog(exchangeRate)} size="small">
                                                     <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                 </IconButton>
                                             </Box>
@@ -426,6 +440,23 @@ function ExchangeRateList() {
                     <Button onClick={editing ? handleUpdateExchangeRate : handleCreateExchangeRate} color="primary" disabled={!isFormValid}>
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 300 }}
+            >
+                <DialogTitle>Подтверждение удаления</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Вы уверены, что хотите удалить курс "{exchangeRateToDelete?.fromCurrencyCode} → {exchangeRateToDelete?.toCurrencyCode}"?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
+                    <Button onClick={handleDeleteExchangeRate} color="primary">Удалить</Button>
                 </DialogActions>
             </Dialog>
         </>

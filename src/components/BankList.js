@@ -43,7 +43,7 @@ const BankItem = styled(Box)(({ theme }) => ({
     '&:hover': {
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     },
-    minWidth: '300px', // Restored original width
+    minWidth: '300px',
 }));
 
 const PaginationContainer = styled(Box)(({ theme }) => ({
@@ -65,6 +65,8 @@ function BankList() {
     const [selectedBankId, setSelectedBankId] = useState(null);
     const [editing, setEditing] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [bankToDelete, setBankToDelete] = useState(null);
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -113,10 +115,22 @@ function BankList() {
         }
     };
 
-    const handleDeleteBank = async (id) => {
+    const handleOpenDeleteDialog = (bank) => {
+        setBankToDelete(bank);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setBankToDelete(null);
+    };
+
+    const handleDeleteBank = async () => {
+        if (!bankToDelete) return;
         try {
-            await bankService.deleteBank(id);
+            await bankService.deleteBank(bankToDelete.id);
             fetchBanks();
+            handleCloseDeleteDialog();
         } catch (error) {
             console.error("Ошибка при удалении банка:", error);
             alert("Ошибка при удалении банка: " + error.message);
@@ -154,7 +168,7 @@ function BankList() {
                                     <IconButton onClick={() => handleEditBank(bank)} size="small">
                                         <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                     </IconButton>
-                                    <IconButton onClick={() => handleDeleteBank(bank.id)} size="small">
+                                    <IconButton onClick={() => handleOpenDeleteDialog(bank)} size="small">
                                         <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                     </IconButton>
                                 </Box>
@@ -205,6 +219,18 @@ function BankList() {
                     <Button onClick={editing ? handleUpdateBank : handleCreateBank} color="primary">
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog} TransitionComponent={Fade} TransitionProps={{ timeout: 300 }}>
+                <DialogTitle>Подтверждение удаления</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        Вы уверены, что хотите удалить банк "{bankToDelete?.name}"?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
+                    <Button onClick={handleDeleteBank} color="primary">Удалить</Button>
                 </DialogActions>
             </Dialog>
         </MainContent>
