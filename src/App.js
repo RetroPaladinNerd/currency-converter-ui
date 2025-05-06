@@ -5,7 +5,7 @@ import CurrencyConverter from './components/CurrencyConverter';
 import BankList from './components/BankList';
 import CurrencyList from './components/CurrencyList';
 import ExchangeRateList from './components/ExchangeRateList';
-import { Container, Box } from '@mui/material';
+import { Container, Box, Typography } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './index.css';
 
@@ -166,6 +166,7 @@ function App() {
                                 <Route path="/banks" element={<BankList />} />
                                 <Route path="/currencies" element={<CurrencyList />} />
                                 <Route path="/exchange-rates" element={<ExchangeRateList />} />
+                                <Route path="*" element={<Typography variant="h6">Страница не найдена</Typography>} />
                             </Routes>
                         </MainContentContainer>
                     </SidebarAndContent>
