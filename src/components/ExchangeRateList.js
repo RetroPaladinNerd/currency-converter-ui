@@ -92,32 +92,6 @@ const MainContent = styled(Box)({
     alignItems: 'center',
 });
 
-const Footer = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    padding: theme.spacing(2),
-    backgroundColor: '#f5f5f5',
-    borderTop: '1px solid #e0e0e0',
-    width: '83vw',
-    boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
-}));
-
-const FooterLinks = styled(Box)({
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '10px',
-});
-
-const FooterLink = styled(Link)({
-    color: '#007aff',
-    textDecoration: 'none',
-    '&:hover': {
-        textDecoration: 'underline',
-    },
-});
-
 function ExchangeRateList() {
     const [exchangeRates, setExchangeRates] = useState([]);
     const [open, setOpen] = useState(false);
@@ -258,14 +232,12 @@ function ExchangeRateList() {
         setCurrentPage(value);
     };
 
-    // Функция для подготовки данных графика
     const getChartData = (exchangeRate) => {
-        // Симуляция исторических данных (можно заменить на реальные данные из API)
         const days = ['День 1', 'День 2', 'День 3', 'День 4', 'День 5'];
         const baseRate = exchangeRate.rate;
         const data = days.map((day, index) => ({
             x: day,
-            y: baseRate + (Math.random() - 0.5) * 0.1, // Случайные колебания
+            y: baseRate + (Math.random() - 0.5) * 0.1,
         }));
 
         return {
@@ -376,17 +348,6 @@ function ExchangeRateList() {
                         </PaginationContainer>
                     )}
                 </StyledPaper>
-                <Footer>
-                    <FooterLinks>
-                        <FooterLink to="/">Converter</FooterLink>
-                        <FooterLink to="/currencies">Currencies</FooterLink>
-                        <FooterLink to="/banks">Banks</FooterLink>
-                        <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                    </FooterLinks>
-                    <Typography variant="body2" color="textSecondary">
-                        © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                    </Typography>
-                </Footer>
             </MainContent>
             <Dialog 
                 open={open} 
