@@ -69,17 +69,23 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     overflowX: 'hidden',
 }));
 
+const MainContent = styled(Box)({
+    minHeight: '100vh',
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+});
+
 const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw',
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
+    width: '83vw',
     boxSizing: 'border-box',
-    zIndex: 1000,
+    marginLeft: 'calc(-50vw + 50%)',
+    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({
@@ -95,15 +101,6 @@ const FooterLink = styled(Link)({
     '&:hover': {
         textDecoration: 'underline',
     },
-});
-
-const MainContent = styled(Box)({
-    minHeight: '100vh',
-    paddingBottom: '100px', // Отступ для футера
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
 });
 
 function CurrencyList() {
@@ -404,18 +401,18 @@ function CurrencyList() {
                         </Grid>
                     </Grid>
                 </Box>
+                <Footer>
+                    <FooterLinks>
+                        <FooterLink to="/">Converter</FooterLink>
+                        <FooterLink to="/currencies">Currencies</FooterLink>
+                        <FooterLink to="/banks">Banks</FooterLink>
+                        <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
+                    </FooterLinks>
+                    <Typography variant="body2" color="textSecondary">
+                        © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
+                    </Typography>
+                </Footer>
             </MainContent>
-            <Footer>
-                <FooterLinks>
-                    <FooterLink to="/">Converter</FooterLink>
-                    <FooterLink to="/currencies">Currencies</FooterLink>
-                    <FooterLink to="/banks">Banks</FooterLink>
-                    <FooterLink to="/exchange-rates">Exchange Rates</FooterLink>
-                </FooterLinks>
-                <Typography variant="body2" color="textSecondary">
-                    © 2025 Currency Converter. All rights reserved. | Contact: <FooterLink component="a" href="https://t.me/insolitudeallalone" target="_blank" rel="noopener noreferrer">Telegram</FooterLink>
-                </Typography>
-            </Footer>
             <Dialog
                 open={open}
                 onClose={handleClose}
