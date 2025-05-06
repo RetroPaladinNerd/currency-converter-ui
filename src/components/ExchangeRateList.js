@@ -278,6 +278,8 @@ function ExchangeRateList() {
         },
     };
 
+    const isFormValid = bankId && fromCurrencyCode && toCurrencyCode && rate;
+
     return (
         <>
             <MainContent>
@@ -413,10 +415,15 @@ function ExchangeRateList() {
                         onChange={(e) => setRate(e.target.value)}
                         size="small"
                     />
+                    {!isFormValid && (
+                        <Typography variant="caption" color="error" sx={{ mt: 1 }}>
+                            Все поля должны быть заполнены.
+                        </Typography>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">Отмена</Button>
-                    <Button onClick={editing ? handleUpdateExchangeRate : handleCreateExchangeRate} color="primary">
+                    <Button onClick={editing ? handleUpdateExchangeRate : handleCreateExchangeRate} color="primary" disabled={!isFormValid}>
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
                 </DialogActions>
