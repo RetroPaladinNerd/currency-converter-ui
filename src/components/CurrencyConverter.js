@@ -26,8 +26,8 @@ const RightColumn = styled(Box)(({ theme }) => ({
 }));
 
 const StyledPaper = styled(Paper, {
-    shouldForwardProp: (prop) => prop !== 'isExchangeRates',
-})(({ theme, isExchangeRates }) => ({
+    shouldForwardProp: (prop) => prop !== 'isExchangeRates' && prop !== 'adjustedHeight',
+})(({ theme, isExchangeRates, adjustedHeight }) => ({
     padding: theme.spacing(2.5),
     borderRadius: '20px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -37,7 +37,7 @@ const StyledPaper = styled(Paper, {
         transform: 'translateY(-2px)',
     },
     ...(isExchangeRates && {
-        flexGrow: 1,
+        height: adjustedHeight ? `${adjustedHeight}px` : 'auto',
     }),
     ...(!isExchangeRates && {
         flexGrow: 1,
@@ -87,7 +87,7 @@ const RateListContainer = styled(Box)(({ theme }) => ({
     gap: 0,
     marginBottom: theme.spacing(3),
     flexGrow: 1,
-    overflow: 'hidden',
+    overflowY: 'auto',
 }));
 
 const BankListContainer = styled(Box)(({ theme }) => ({
@@ -136,22 +136,15 @@ function CurrencyConverter() {
     const [bankMap, setBankMap] = useState({});
     const [bankRates, setBankRates] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(1); // Initial value, will be calculated
+    const [leftColumnHeight, setLeftColumnHeight] = useState(0);
+    const itemsPerPage = 7;
 
-    const rateListRef = useRef(null);
-    const rateItemRef = useRef(null);
+    const leftColumnRef = useRef(null);
 
-    const calculateItemsPerPage = useCallback(() => {
-        if (rateListRef.current && rateItemRef.current) {
-            const rateListHeight = rateListRef.current.getBoundingClientRect().height;
-            const rateItemHeight = rateItemRef.current.getBoundingClientRect().height;
-            const titleHeight = 40; // Approximate height of the title and padding
-            const paginationHeight = 40; // Approximate height of pagination
-            const availableHeight = rateListHeight - titleHeight - paginationHeight;
-            const calculatedItems = Math.floor(availableHeight / rateItemHeight);
-            const newItemsPerPage = Math.max(1, calculatedItems); // Ensure at least 1 item
-            setItemsPerPage(newItemsPerPage);
-            setCurrentPage(1); // Reset to first page when items per page changes
+    const calculateLeftColumnHeight = useCallback(() => {
+        if (leftColumnRef.current) {
+            const height = leftColumnRef.current.getBoundingClientRect().height;
+            setLeftColumnHeight(height);
         }
     }, []);
 
@@ -160,19 +153,19 @@ function CurrencyConverter() {
     }, []);
 
     useEffect(() => {
-        calculateItemsPerPage();
+        calculateLeftColumnHeight();
         const resizeObserver = new ResizeObserver(() => {
-            calculateItemsPerPage();
+            calculateLeftColumnHeight();
         });
-        if (rateListRef.current) {
-            resizeObserver.observe(rateListRef.current);
+        if (leftColumnRef.current) {
+            resizeObserver.observe(leftColumnRef.current);
         }
         return () => {
-            if (rateListRef.current) {
-                resizeObserver.unobserve(rateListRef.current);
+            if (leftColumnRef.current) {
+                resizeObserver.unobserve(leftColumnRef.current);
             }
         };
-    }, [calculateItemsPerPage, exchangeRates]);
+    }, [calculateLeftColumnHeight, banks, exchangeRates]);
 
     const fetchInitialData = async () => {
         try {
@@ -258,7 +251,7 @@ function CurrencyConverter() {
     return (
         <MainContent>
             <MainContainer>
-                <LeftColumn>
+                <LeftColumn ref={leftColumnRef}>
                     <StyledPaper elevation={1}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Конвертер валют
@@ -368,7 +361,7 @@ function CurrencyConverter() {
                     </StyledPaper>
                 </LeftColumn>
                 <RightColumn>
-                    <StyledPaper elevation={1} isExchangeRates ref={rateListRef}>
+                    <StyledPaper elevation={1} isExchangeRates adjustedHeight={leftColumnHeight}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Текущие курсы
                         </Typography>
@@ -377,11 +370,7 @@ function CurrencyConverter() {
                                 const nextRate = currentExchangeRates[index + 1];
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
                                 return (
-                                    <RateItem
-                                        key={index}
-                                        addExtraSpace={addExtraSpace}
-                                        ref={index === 0 ? rateItemRef : null}
-                                    >
+                                    <RateItem key={index} addExtraSpace={addExtraSpace}>
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
                                         </Typography>
@@ -397,7 +386,7 @@ function CurrencyConverter() {
                                 </Typography>
                             )}
                         </RateListContainer>
-                        {exchangeRates.length > 0 && totalPages > 1 && (
+                        {exchangeRates.length > 0 && (
                             <PaginationContainer>
                                 <Pagination
                                     count={totalPages}
