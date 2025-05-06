@@ -58,6 +58,7 @@ const MainContent = styled(Box)({
     alignItems: 'center',
     width: '100%',
     boxSizing: 'border-box',
+    paddingBottom: '60px', // Высота футера + небольшой отступ
 });
 
 const Footer = styled(Box)(({ theme }) => ({
@@ -65,10 +66,12 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '83vw',
+    width: '100%',
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    zIndex: 1000,
     boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({
