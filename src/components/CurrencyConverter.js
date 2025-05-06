@@ -114,11 +114,11 @@ const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '100vw',
+    width: '120vw',
     marginTop: 'auto',
     boxSizing: 'border-box',
-    marginLeft: 'calc(-30vw + 20%)', // Устанавливаем футер на всю ширину экрана
-    marginRight: 'calc(-30vw + 20%)',
+    marginLeft: 'calc(-50vw)', // Устанавливаем футер на всю ширину экрана
+    marginRight: 'calc(-50vw)',
 }));
 
 const FooterLinks = styled(Box)({
