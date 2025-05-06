@@ -102,7 +102,6 @@ const MainContent = styled(Box)({
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     boxSizing: 'border-box',
@@ -115,7 +114,7 @@ const MainContainer = styled(Box)(({ theme }) => ({
     width: '100%',
     maxWidth: '100%',
     margin: '0 auto',
-    marginBottom: theme.spacing(4), // Увеличенный отступ между MainContainer и футером
+    marginBottom: theme.spacing(6), // Увеличенный отступ между MainContainer и футером
     overflowX: 'hidden',
     boxSizing: 'border-box',
     flexGrow: 1,
@@ -130,8 +129,6 @@ const Footer = styled(Box)(({ theme }) => ({
     boxSizing: 'border-box',
     marginLeft: 'calc(-50vw + 50%)',
     marginRight: 'calc(-50vw + 50%)',
-    position: 'sticky',
-    bottom: 0, // Прижимаем футер к нижнему краю
 }));
 
 const FooterLinks = styled(Box)({
@@ -215,7 +212,6 @@ function CurrencyConverter() {
                 setResult('Пожалуйста, заполните все поля корректно');
                 return;
             }
-            // Find the rate directly from exchangeRates
             const rateData = exchangeRates.find(rate =>
                 rate.bankId === bank &&
                 rate.fromCurrencyCode === fromCurrency &&
@@ -237,7 +233,7 @@ function CurrencyConverter() {
     const handleSwapCurrencies = () => {
         setFromCurrency(toCurrency);
         setToCurrency(fromCurrency);
-        setResult(''); // Clear the result when swapping currencies
+        setResult('');
     };
 
     const indexOfLastItem = currentPage * itemsPerPage;
