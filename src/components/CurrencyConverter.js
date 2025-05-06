@@ -127,8 +127,6 @@ const Footer = styled(Box)(({ theme }) => ({
     borderTop: '1px solid #e0e0e0',
     width: '83vw',
     boxSizing: 'border-box',
-    marginLeft: 'calc(-50vw + 50%)',
-    marginRight: 'calc(-50vw + 50%)',
 }));
 
 const FooterLinks = styled(Box)({
