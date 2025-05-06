@@ -109,13 +109,22 @@ const PaginationContainer = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(1),
 }));
 
+const MainContent = styled(Box)({
+    minHeight: '100vh', // Ensure the content takes at least the full viewport height
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between', // Push footer to the bottom
+    alignItems: 'center',
+    width: '100%',
+    boxSizing: 'border-box',
+});
+
 const Footer = styled(Box)(({ theme }) => ({
     textAlign: 'center',
     padding: theme.spacing(2),
     backgroundColor: '#f5f5f5',
     borderTop: '1px solid #e0e0e0',
-    width: '83vw',
-    marginTop: 'auto',
+    width: '83vw', // Keep this as is
     boxSizing: 'border-box',
     marginLeft: 'calc(-50vw + 50%)',
     marginRight: 'calc(-50vw + 50%)',
@@ -136,15 +145,7 @@ const FooterLink = styled(Link)({
     },
 });
 
-const MainContent = styled(Box)({
-    minHeight: '100vh',
-    paddingBottom: '40px', // Увеличенный отступ между данными и футером
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-});
+
 
 function CurrencyConverter() {
     const [banks, setBanks] = useState([]);
