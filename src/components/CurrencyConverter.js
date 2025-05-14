@@ -3,13 +3,37 @@ import {
     Paper, Typography, Box, Select, MenuItem, TextField, Button, FormControl,
     InputLabel, Pagination, IconButton
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import exchangeRateService from '../services/exchangeRateService';
 import bankService from '../services/bankService';
 import currencyService from '../services/currencyService';
 
+// Styled components (unchanged except for StyledPaper)
+const StyledPaper = styled(Paper, {
+    shouldForwardProp: (prop) => prop !== 'isExchangeRates' && prop !== 'adjustedHeight',
+})(({ theme, isExchangeRates, adjustedHeight }) => ({
+    padding: theme.spacing(2.5),
+    borderRadius: '20px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    backgroundColor: theme.palette.background.paper,
+    transition: 'transform 0.2s ease',
+    '&:hover': {
+        transform: 'translateY(-2px)',
+    },
+    ...(isExchangeRates && {
+        height: adjustedHeight ? `${adjustedHeight}px` : 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+    }),
+    ...(!isExchangeRates && {
+        flexGrow: 1,
+    }),
+    width: '100%',
+    boxSizing: 'border-box',
+}));
+
+// Other styled components (unchanged)
 const LeftColumn = styled(Box)(({ theme }) => ({
     flex: 1,
     display: 'flex',
@@ -24,36 +48,6 @@ const RightColumn = styled(Box)(({ theme }) => ({
     flexDirection: 'column',
     width: '100%',
 }));
-
-const StyledPaper = styled(Paper, {
-    shouldForwardProp: (prop) => prop !== 'isExchangeRates' && prop !== 'adjustedHeight',
-})(({ theme, isExchangeRates, adjustedHeight }) => ({
-    padding: theme.spacing(2.5),
-    borderRadius: '20px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    backgroundColor: theme.palette.background.paper,
-    transition: 'transform 0.2s ease',
-    '&:hover': {
-        transform: 'translateY(-2px)',
-    },
-    ...(isExchangeRates && {
-        height: adjustedHeight ? `${adjustedHeight}px` : 'auto',
-    }),
-    ...(!isExchangeRates && {
-        flexGrow: 1,
-    }),
-    width: '100%',
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-}));
-
-const StyledFormBox = styled(Box)({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    marginBottom: '12px',
-});
 
 const RateItem = styled(Box, {
     shouldForwardProp: (prop) => prop !== 'addExtraSpace',
@@ -73,27 +67,12 @@ const RateItem = styled(Box, {
     justifyContent: 'space-between',
 }));
 
-const BankItem = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(1),
-    borderRadius: '12px',
-    backgroundColor: '#ffffff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-    marginBottom: theme.spacing(0.5),
-}));
-
 const RateListContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 0,
-    marginBottom: theme.spacing(3),
     flexGrow: 1,
     overflow: 'hidden',
-}));
-
-const BankListContainer = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 0.5,
 }));
 
 const PaginationContainer = styled(Box)(({ theme }) => ({
@@ -136,7 +115,7 @@ function CurrencyConverter() {
     const [bankMap, setBankMap] = useState({});
     const [bankRates, setBankRates] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(1); // Initial value, will be calculated
+    const [itemsPerPage, setItemsPerPage] = useState(1);
     const [leftColumnHeight, setLeftColumnHeight] = useState(0);
     const [availableFromCurrencies, setAvailableFromCurrencies] = useState([]);
     const [availableToCurrencies, setAvailableToCurrencies] = useState([]);
@@ -147,27 +126,34 @@ function CurrencyConverter() {
 
     const calculateItemsPerPage = useCallback(() => {
         if (leftColumnRef.current && rateListRef.current && rateItemRefs.current[0]) {
+            // Get the total height of the left column (converter + banks)
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
-            const rateListHeight = leftHeight;
-            const rateItemHeight = rateItemRefs.current[0].getBoundingClientRect().height;
-            const marginBottom = 4; // theme.spacing(0.5) = 4px
-            const totalItemHeight = rateItemHeight + marginBottom; // Include margin in calculation
-            const titleHeight = 40; // Approximate height of the title and padding
+            // Estimate the height of the title and padding in the rates section
+            const titleHeight = 40; // Approximate height of title and padding
             const paginationHeight = 40; // Approximate height of pagination
-            const availableHeight = rateListHeight - titleHeight - paginationHeight;
+            const availableHeight = leftHeight - titleHeight - paginationHeight;
 
-            // Calculate how many items fit without clipping
+            // Calculate the number of fully visible items
             let visibleItems = 0;
             let currentHeight = 0;
 
             for (let i = 0; i < exchangeRates.length; i++) {
-                currentHeight += totalItemHeight;
-                if (currentHeight <= availableHeight) {
+                const rateItem = rateItemRefs.current[i];
+                if (!rateItem) break;
+
+                const itemHeight = rateItem.getBoundingClientRect().height;
+                // Determine margin based on whether extra space is needed
+                const nextRate = exchangeRates[i + 1];
+                const marginBottom = nextRate && exchangeRates[i].bankId !== nextRate.bankId ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
+                const totalItemHeight = itemHeight + marginBottom;
+
+                if (currentHeight + totalItemHeight <= availableHeight) {
+                    currentHeight += totalItemHeight;
                     visibleItems++;
                 } else {
-                    break;
+                    break; // Stop if the next item would be clipped
                 }
             }
 
@@ -196,30 +182,12 @@ function CurrencyConverter() {
         };
     }, [calculateItemsPerPage, banks, exchangeRates]);
 
+    // Update rateItemRefs to match the current page's items
     useEffect(() => {
-        if (!bank) {
-            setAvailableFromCurrencies([]);
-            setAvailableToCurrencies([]);
-            return;
-        }
+        rateItemRefs.current = rateItemRefs.current.slice(0, exchangeRates.length);
+    }, [exchangeRates]);
 
-        // Filter available currencies for the selected bank
-        const ratesForBank = exchangeRates.filter(rate => rate.bankId === bank);
-        const fromCurrencies = [...new Set(ratesForBank.map(rate => rate.fromCurrencyCode))];
-        const toCurrencies = [...new Set(ratesForBank.map(rate => rate.toCurrencyCode))];
-
-        setAvailableFromCurrencies(fromCurrencies);
-        setAvailableToCurrencies(toCurrencies);
-
-        // Reset selected currencies if they are not available in the new bank
-        if (!fromCurrencies.includes(fromCurrency)) {
-            setFromCurrency(fromCurrencies[0] || '');
-        }
-        if (!toCurrencies.includes(toCurrency)) {
-            setToCurrency(toCurrencies[0] || '');
-        }
-    }, [bank, exchangeRates, fromCurrency, toCurrency]);
-
+    // Unchanged fetchInitialData, handleConvert, handleSwapCurrencies, and currency filtering logic
     const fetchInitialData = async () => {
         try {
             const [bankData, currencyData, rateData] = await Promise.all([
@@ -292,6 +260,25 @@ function CurrencyConverter() {
         setResult('');
     };
 
+    useEffect(() => {
+        if (!bank) {
+            setAvailableFromCurrencies([]);
+            setAvailableToCurrencies([]);
+            return;
+        }
+        const ratesForBank = exchangeRates.filter(rate => rate.bankId === bank);
+        const fromCurrencies = [...new Set(ratesForBank.map(rate => rate.fromCurrencyCode))];
+        const toCurrencies = [...new Set(ratesForBank.map(rate => rate.toCurrencyCode))];
+        setAvailableFromCurrencies(fromCurrencies);
+        setAvailableToCurrencies(toCurrencies);
+        if (!fromCurrencies.includes(fromCurrency)) {
+            setFromCurrency(fromCurrencies[0] || '');
+        }
+        if (!toCurrencies.includes(toCurrency)) {
+            setToCurrency(toCurrencies[0] || '');
+        }
+    }, [bank, exchangeRates, fromCurrency, toCurrency]);
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentExchangeRates = exchangeRates.slice(indexOfFirstItem, indexOfLastItem);
@@ -309,7 +296,7 @@ function CurrencyConverter() {
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Конвертер валют
                         </Typography>
-                        <StyledFormBox>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                             <FormControl fullWidth variant="outlined" size="small">
                                 <InputLabel id="bank-select-label">Банк</InputLabel>
                                 <Select
@@ -374,15 +361,24 @@ function CurrencyConverter() {
                                     Результат: {result}
                                 </Typography>
                             )}
-                        </StyledFormBox>
+                        </Box>
                     </StyledPaper>
                     <StyledPaper elevation={1}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Список банков
                         </Typography>
-                        <BankListContainer>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                             {banks.map((bank) => (
-                                <BankItem key={bank.id}>
+                                <Box
+                                    key={bank.id}
+                                    sx={{
+                                        padding: 1,
+                                        borderRadius: '12px',
+                                        backgroundColor: '#ffffff',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                        marginBottom: 0.5,
+                                    }}
+                                >
                                     <Typography variant="body1">{bank.name}</Typography>
                                     {bankRates[bank.id] && (
                                         <Box sx={{ mt: 0.5, display: 'flex', gap: 2 }}>
@@ -403,14 +399,14 @@ function CurrencyConverter() {
                                             )}
                                         </Box>
                                     )}
-                                </BankItem>
+                                </Box>
                             ))}
                             {banks.length === 0 && (
                                 <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
                                     Банки не найдены.
                                 </Typography>
                             )}
-                        </BankListContainer>
+                        </Box>
                     </StyledPaper>
                 </LeftColumn>
                 <RightColumn>
@@ -424,9 +420,9 @@ function CurrencyConverter() {
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
                                 return (
                                     <RateItem
-                                        key={index}
+                                        key={`${rate.bankId}-${rate.fromCurrencyCode}-${rate.toCurrencyCode}`}
                                         addExtraSpace={addExtraSpace}
-                                        ref={el => (rateItemRefs.current[index] = el)}
+                                        ref={(el) => (rateItemRefs.current[indexOfFirstItem + index] = el)}
                                     >
                                         <Typography variant="body1">
                                             {rate.fromCurrencyCode} → {rate.toCurrencyCode}: {rate.rate}
