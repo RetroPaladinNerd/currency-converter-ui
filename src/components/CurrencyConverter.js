@@ -221,12 +221,14 @@ function CurrencyConverter() {
                 currencyService.getAllCurrencies(),
                 exchangeRateService.getAllExchangeRates()
             ]);
-            setBanks(bankData);
+            // Ограничиваем список банков до 8
+            const limitedBanks = bankData.slice(0, 8);
+            setBanks(limitedBanks);
             setCurrencies(currencyData);
             if (Array.isArray(rateData)) {
                 setExchangeRates(rateData);
                 const ratesByBank = {};
-                bankData.forEach(bank => {
+                limitedBanks.forEach(bank => {
                     ratesByBank[bank.id] = {
                         usdToByn: null,
                         eurToByn: null,
@@ -234,7 +236,7 @@ function CurrencyConverter() {
                     };
                 });
                 rateData.forEach(rate => {
-                    if (rate.toCurrencyCode === 'BYN') {
+                    if (rate.toCurrencyCode === 'BYN' && limitedBanks.some(b => b.id === rate.bankId)) {
                         if (rate.fromCurrencyCode === 'USD') {
                             ratesByBank[rate.bankId].usdToByn = rate.rate;
                         } else if (rate.fromCurrencyCode === 'EUR') {
@@ -247,7 +249,7 @@ function CurrencyConverter() {
                 setBankRates(ratesByBank);
             }
             const newBankMap = {};
-            bankData.forEach(bank => {
+            limitedBanks.forEach(bank => {
                 newBankMap[bank.id] = bank;
             });
             setBankMap(newBankMap);
