@@ -1,6 +1,5 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, styled } from '@mui/material';
-import { NavLink } from 'react-router-dom';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton, styled } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import EuroIcon from '@mui/icons-material/Euro';
@@ -18,46 +17,41 @@ const SidebarContainer = styled(Drawer)(({ theme }) => ({
     },
 }));
 
-const StyledNavLink = styled(NavLink)(({ theme }) => ({
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
     color: '#666666',
-    textDecoration: 'none',
-    width: '100%',
-    '&.active': {
+    '&.Mui-selected': {
         color: '#007aff',
+        backgroundColor: 'rgba(0, 122, 255, 0.1)',
     },
     '&:hover': {
         backgroundColor: 'rgba(0, 122, 255, 0.1)',
     },
 }));
 
-function Sidebar() {
+function Sidebar({ setActiveSection, activeSection }) {
+    const menuItems = [
+        { text: 'Конвертер', value: 'converter', icon: <SwapHorizIcon /> },
+        { text: 'Банки', value: 'banks', icon: <AccountBalanceIcon /> },
+        { text: 'Валюты', value: 'currencies', icon: <EuroIcon /> },
+        { text: 'Обменные курсы', value: 'exchange-rates', icon: <AttachMoneyIcon /> },
+    ];
+
     return (
         <SidebarContainer variant="permanent" anchor="left">
             <List>
-                <ListItem button component={StyledNavLink} to="/" activeClassName="active">
-                    <ListItemIcon>
-                        <SwapHorizIcon sx={{ color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Конвертер" />
-                </ListItem>
-                <ListItem button component={StyledNavLink} to="/banks" activeClassName="active">
-                    <ListItemIcon>
-                        <AccountBalanceIcon sx={{ color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Банки" />
-                </ListItem>
-                <ListItem button component={StyledNavLink} to="/currencies" activeClassName="active">
-                    <ListItemIcon>
-                        <EuroIcon sx={{ color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Валюты" />
-                </ListItem>
-                <ListItem button component={StyledNavLink} to="/exchange-rates" activeClassName="active">
-                    <ListItemIcon>
-                        <AttachMoneyIcon sx={{ color: 'inherit' }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Обменные курсы" />
-                </ListItem>
+                {menuItems.map((item) => (
+                    <ListItem key={item.value} disablePadding>
+                        <StyledListItemButton
+                            selected={activeSection === item.value}
+                            onClick={() => setActiveSection(item.value)}
+                        >
+                            <ListItemIcon sx={{ color: 'inherit' }}>
+                                {item.icon}
+                            </ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </StyledListItemButton>
+                    </ListItem>
+                ))}
             </List>
         </SidebarContainer>
     );

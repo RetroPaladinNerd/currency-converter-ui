@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import CurrencyConverter from './components/CurrencyConverter';
 import BankList from './components/BankList';
@@ -154,24 +153,33 @@ const SidebarAndContent = styled(Box)({
 });
 
 function App() {
+    const [activeSection, setActiveSection] = useState('converter'); // Начальная секция
+
+    const renderSection = () => {
+        switch (activeSection) {
+            case 'converter':
+                return <CurrencyConverter />;
+            case 'banks':
+                return <BankList />;
+            case 'currencies':
+                return <CurrencyList />;
+            case 'exchange-rates':
+                return <ExchangeRateList />;
+            default:
+                return <Typography variant="h6">Страница не найдена</Typography>;
+        }
+    };
+
     return (
         <ThemeProvider theme={theme}>
-            <Router basename="/">
-                <AppContainer disableGutters>
-                    <SidebarAndContent>
-                        <Sidebar />
-                        <MainContentContainer>
-                            <Routes>
-                                <Route path="/" element={<CurrencyConverter />} />
-                                <Route path="/banks" element={<BankList />} />
-                                <Route path="/currencies" element={<CurrencyList />} />
-                                <Route path="/exchange-rates" element={<ExchangeRateList />} />
-                                <Route path="*" element={<Typography variant="h6">Страница не найдена</Typography>} />
-                            </Routes>
-                        </MainContentContainer>
-                    </SidebarAndContent>
-                </AppContainer>
-            </Router>
+            <AppContainer disableGutters>
+                <SidebarAndContent>
+                    <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} />
+                    <MainContentContainer>
+                        {renderSection()}
+                    </MainContentContainer>
+                </SidebarAndContent>
+            </AppContainer>
         </ThemeProvider>
     );
 }
