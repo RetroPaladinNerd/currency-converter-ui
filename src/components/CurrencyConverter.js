@@ -137,22 +137,22 @@ function CurrencyConverter() {
 
             // Высота заголовка и пагинации
             const titleHeight = 40; // Примерная высота заголовка "Текущие курсы"
-            const paginationHeight = exchangeRates.length > 0 ? 40 : 0; // Учитываем пагинацию только если есть курсы
+            const paginationHeight = exchangeRates.length > 0 ? 56 : 0; // Точная высота пагинации
             const availableHeight = leftHeight - titleHeight - paginationHeight;
 
             // Рассчитываем, сколько элементов RateItem помещается
             let visibleItems = 0;
             let currentHeight = 0;
 
-            // Берем высоту первого элемента как базовую (предполагаем, что все RateItem одинаковой высоты)
-            const baseItemHeight = rateItemRefs.current[0]?.getBoundingClientRect().height || 40;
-
-            // Проходим по всем курсам, учитывая их индексы и отступы
+            // Проходим по всем элементам, чтобы учесть их индивидуальные высоты
             for (let i = 0; i < exchangeRates.length; i++) {
+                const rateItem = rateItemRefs.current[i];
+                const itemHeight = rateItem?.getBoundingClientRect().height || 40; // Если элемент еще не отрендерен, используем значение по умолчанию
                 const addExtraSpace = i < exchangeRates.length - 1 && exchangeRates[i].bankId !== exchangeRates[i + 1].bankId;
                 const marginBottom = addExtraSpace ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
-                const totalItemHeight = baseItemHeight + marginBottom;
+                const totalItemHeight = itemHeight + marginBottom;
 
+                // Проверяем, помещается ли элемент полностью
                 if (currentHeight + totalItemHeight <= availableHeight) {
                     currentHeight += totalItemHeight;
                     visibleItems++;
@@ -185,6 +185,12 @@ function CurrencyConverter() {
             }
         };
     }, [calculateItemsPerPage, banks, exchangeRates]);
+
+    useEffect(() => {
+        // Очистка и обновление rateItemRefs при изменении exchangeRates
+        rateItemRefs.current = new Array(exchangeRates.length).fill(null);
+        calculateItemsPerPage();
+    }, [exchangeRates, calculateItemsPerPage]);
 
     useEffect(() => {
         if (!bank) {
