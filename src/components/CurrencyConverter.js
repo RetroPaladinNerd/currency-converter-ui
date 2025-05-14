@@ -9,7 +9,21 @@ import exchangeRateService from '../services/exchangeRateService';
 import bankService from '../services/bankService';
 import currencyService from '../services/currencyService';
 
-// Styled components (unchanged except for StyledPaper)
+const LeftColumn = styled(Box)(({ theme }) => ({
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1),
+    width: '100%',
+}));
+
+const RightColumn = styled(Box)(({ theme }) => ({
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+}));
+
 const StyledPaper = styled(Paper, {
     shouldForwardProp: (prop) => prop !== 'isExchangeRates' && prop !== 'adjustedHeight',
 })(({ theme, isExchangeRates, adjustedHeight }) => ({
@@ -33,21 +47,12 @@ const StyledPaper = styled(Paper, {
     boxSizing: 'border-box',
 }));
 
-// Other styled components (unchanged)
-const LeftColumn = styled(Box)(({ theme }) => ({
-    flex: 1,
+const StyledFormBox = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
-    gap: theme.spacing(1),
-    width: '100%',
-}));
-
-const RightColumn = styled(Box)(({ theme }) => ({
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-}));
+    gap: '8px',
+    marginBottom: '12px',
+});
 
 const RateItem = styled(Box, {
     shouldForwardProp: (prop) => prop !== 'addExtraSpace',
@@ -125,41 +130,40 @@ function CurrencyConverter() {
     const rateItemRefs = useRef([]);
 
     const calculateItemsPerPage = useCallback(() => {
-        if (leftColumnRef.current && rateListRef.current && rateItemRefs.current[0]) {
-            // Get the total height of the left column (converter + banks)
+        if (leftColumnRef.current && rateListRef.current && rateItemRefs.current.length > 0) {
+            // Получаем высоту левой колонки (конвертер + банки)
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
-            // Estimate the height of the title and padding in the rates section
-            const titleHeight = 40; // Approximate height of title and padding
-            const paginationHeight = 40; // Approximate height of pagination
+            // Высота заголовка и пагинации
+            const titleHeight = 40; // Примерная высота заголовка "Текущие курсы"
+            const paginationHeight = exchangeRates.length > 0 ? 40 : 0; // Учитываем пагинацию только если есть курсы
             const availableHeight = leftHeight - titleHeight - paginationHeight;
 
-            // Calculate the number of fully visible items
+            // Рассчитываем, сколько элементов RateItem помещается
             let visibleItems = 0;
             let currentHeight = 0;
 
-            for (let i = 0; i < exchangeRates.length; i++) {
-                const rateItem = rateItemRefs.current[i];
-                if (!rateItem) break;
+            // Берем высоту первого элемента как базовую (предполагаем, что все RateItem одинаковой высоты)
+            const baseItemHeight = rateItemRefs.current[0]?.getBoundingClientRect().height || 40;
 
-                const itemHeight = rateItem.getBoundingClientRect().height;
-                // Determine margin based on whether extra space is needed
-                const nextRate = exchangeRates[i + 1];
-                const marginBottom = nextRate && exchangeRates[i].bankId !== nextRate.bankId ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
-                const totalItemHeight = itemHeight + marginBottom;
+            // Проходим по всем курсам, учитывая их индексы и отступы
+            for (let i = 0; i < exchangeRates.length; i++) {
+                const addExtraSpace = i < exchangeRates.length - 1 && exchangeRates[i].bankId !== exchangeRates[i + 1].bankId;
+                const marginBottom = addExtraSpace ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
+                const totalItemHeight = baseItemHeight + marginBottom;
 
                 if (currentHeight + totalItemHeight <= availableHeight) {
                     currentHeight += totalItemHeight;
                     visibleItems++;
                 } else {
-                    break; // Stop if the next item would be clipped
+                    break; // Прерываем, если следующий элемент не помещается полностью
                 }
             }
 
-            const newItemsPerPage = Math.max(1, visibleItems); // Ensure at least 1 item
+            const newItemsPerPage = Math.max(1, visibleItems); // Убедимся, что минимум 1 элемент
             setItemsPerPage(newItemsPerPage);
-            setCurrentPage(1); // Reset to first page when items per page changes
+            setCurrentPage(1); // Сбрасываем страницу при изменении количества элементов
         }
     }, [exchangeRates]);
 
@@ -182,12 +186,28 @@ function CurrencyConverter() {
         };
     }, [calculateItemsPerPage, banks, exchangeRates]);
 
-    // Update rateItemRefs to match the current page's items
     useEffect(() => {
-        rateItemRefs.current = rateItemRefs.current.slice(0, exchangeRates.length);
-    }, [exchangeRates]);
+        if (!bank) {
+            setAvailableFromCurrencies([]);
+            setAvailableToCurrencies([]);
+            return;
+        }
 
-    // Unchanged fetchInitialData, handleConvert, handleSwapCurrencies, and currency filtering logic
+        const ratesForBank = exchangeRates.filter(rate => rate.bankId === bank);
+        const fromCurrencies = [...new Set(ratesForBank.map(rate => rate.fromCurrencyCode))];
+        const toCurrencies = [...new Set(ratesForBank.map(rate => rate.toCurrencyCode))];
+
+        setAvailableFromCurrencies(fromCurrencies);
+        setAvailableToCurrencies(toCurrencies);
+
+        if (!fromCurrencies.includes(fromCurrency)) {
+            setFromCurrency(fromCurrencies[0] || '');
+        }
+        if (!toCurrencies.includes(toCurrency)) {
+            setToCurrency(toCurrencies[0] || '');
+        }
+    }, [bank, exchangeRates, fromCurrency, toCurrency]);
+
     const fetchInitialData = async () => {
         try {
             const [bankData, currencyData, rateData] = await Promise.all([
@@ -260,25 +280,6 @@ function CurrencyConverter() {
         setResult('');
     };
 
-    useEffect(() => {
-        if (!bank) {
-            setAvailableFromCurrencies([]);
-            setAvailableToCurrencies([]);
-            return;
-        }
-        const ratesForBank = exchangeRates.filter(rate => rate.bankId === bank);
-        const fromCurrencies = [...new Set(ratesForBank.map(rate => rate.fromCurrencyCode))];
-        const toCurrencies = [...new Set(ratesForBank.map(rate => rate.toCurrencyCode))];
-        setAvailableFromCurrencies(fromCurrencies);
-        setAvailableToCurrencies(toCurrencies);
-        if (!fromCurrencies.includes(fromCurrency)) {
-            setFromCurrency(fromCurrencies[0] || '');
-        }
-        if (!toCurrencies.includes(toCurrency)) {
-            setToCurrency(toCurrencies[0] || '');
-        }
-    }, [bank, exchangeRates, fromCurrency, toCurrency]);
-
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentExchangeRates = exchangeRates.slice(indexOfFirstItem, indexOfLastItem);
@@ -296,7 +297,7 @@ function CurrencyConverter() {
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
                             Конвертер валют
                         </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                        <StyledFormBox>
                             <FormControl fullWidth variant="outlined" size="small">
                                 <InputLabel id="bank-select-label">Банк</InputLabel>
                                 <Select
@@ -361,7 +362,7 @@ function CurrencyConverter() {
                                     Результат: {result}
                                 </Typography>
                             )}
-                        </Box>
+                        </StyledFormBox>
                     </StyledPaper>
                     <StyledPaper elevation={1}>
                         <Typography variant="subtitle1" style={{ fontWeight: 600, marginBottom: '8px' }}>
