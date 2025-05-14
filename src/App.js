@@ -156,7 +156,7 @@ const SidebarAndContent = styled(Box)({
 function App() {
     return (
         <ThemeProvider theme={theme}>
-            <Router>
+            <Router basename="/">
                 <AppContainer disableGutters>
                     <SidebarAndContent>
                         <Sidebar />
