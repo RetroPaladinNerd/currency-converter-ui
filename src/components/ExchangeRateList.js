@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Paper, Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
-    DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Pagination
+    DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Pagination, CircularProgress
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -107,9 +106,11 @@ function ExchangeRateList() {
     const [toCurrencyCode, setToCurrencyCode] = useState('');
     const [rate, setRate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 4;
 
     const fetchExchangeRates = useCallback(async () => {
+        setLoading(true);
         try {
             const data = await exchangeRateService.getAllExchangeRates();
             if (Array.isArray(data)) {
@@ -121,6 +122,8 @@ function ExchangeRateList() {
         } catch (error) {
             console.error("Ошибка при получении обменных курсов:", error);
             setExchangeRates([]);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -302,7 +305,15 @@ function ExchangeRateList() {
                         Обменные курсы
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        {Array.isArray(currentExchangeRates) && currentExchangeRates.map((exchangeRate) => {
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : Array.isArray(currentExchangeRates) && currentExchangeRates.length === 0 ? (
+                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                                Загрузка...
+                            </Typography>
+                        ) : Array.isArray(currentExchangeRates) && currentExchangeRates.map((exchangeRate) => {
                             const bank = bankMap[exchangeRate.bankId];
                             const bankName = bank ? bank.name : "Неизвестный банк";
                             return (
@@ -321,10 +332,10 @@ function ExchangeRateList() {
                                                 </Typography>
                                             </Box>
                                             <Box sx={{ display: 'flex', gap: 1 }}>
-                                                <IconButton onClick={() => handleEditExchangeRate(exchangeRate)} size="small">
+                                                <IconButton onClick={() => handleEditExchangeRate(exchangeRate)} size="small" disabled={loading}>
                                                     <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                 </IconButton>
-                                                <IconButton onClick={() => handleOpenDeleteDialog(exchangeRate)} size="small">
+                                                <IconButton onClick={() => handleOpenDeleteDialog(exchangeRate)} size="small" disabled={loading}>
                                                     <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                 </IconButton>
                                             </Box>
@@ -336,11 +347,6 @@ function ExchangeRateList() {
                                 </Fade>
                             );
                         })}
-                        {Array.isArray(exchangeRates) && exchangeRates.length === 0 && (
-                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                Обменные курсы не найдены.
-                            </Typography>
-                        )}
                         {!Array.isArray(exchangeRates) && (
                             <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
                                 Ошибка загрузки данных.
@@ -348,7 +354,7 @@ function ExchangeRateList() {
                         )}
                     </Box>
                     <StyledAddBox>
-                        <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                        <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />} disabled={loading}>
                             Добавить курс
                         </Button>
                     </StyledAddBox>
@@ -360,6 +366,7 @@ function ExchangeRateList() {
                                 onChange={handlePageChange}
                                 color="primary"
                                 shape="rounded"
+                                disabled={loading}
                             />
                         </PaginationContainer>
                     )}
@@ -383,6 +390,7 @@ function ExchangeRateList() {
                                 value={bankId}
                                 label="Банк"
                                 onChange={(e) => setBankId(e.target.value)}
+                                disabled={loading}
                             >
                                 {banks.map((bank) => (
                                     <MenuItem key={bank.id} value={bank.id}>{bank.name}</MenuItem>
@@ -398,6 +406,7 @@ function ExchangeRateList() {
                             value={fromCurrencyCode}
                             label="Из валюты"
                             onChange={(e) => setFromCurrencyCode(e.target.value)}
+                            disabled={loading}
                         >
                             {currencies.map((currency) => (
                                 <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
@@ -412,6 +421,7 @@ function ExchangeRateList() {
                             value={toCurrencyCode}
                             label="В валюту"
                             onChange={(e) => setToCurrencyCode(e.target.value)}
+                            disabled={loading}
                         >
                             {currencies.map((currency) => (
                                 <MenuItem key={currency.code} value={currency.code}>{currency.code}</MenuItem>
@@ -428,6 +438,7 @@ function ExchangeRateList() {
                         value={rate}
                         onChange={(e) => setRate(e.target.value)}
                         size="small"
+                        disabled={loading}
                     />
                     {!isFormValid && (
                         <Typography variant="caption" color="error" sx={{ mt: 1 }}>
@@ -436,8 +447,8 @@ function ExchangeRateList() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">Отмена</Button>
-                    <Button onClick={editing ? handleUpdateExchangeRate : handleCreateExchangeRate} color="primary" disabled={!isFormValid}>
+                    <Button onClick={handleClose} color="primary" disabled={loading}>Отмена</Button>
+                    <Button onClick={editing ? handleUpdateExchangeRate : handleCreateExchangeRate} color="primary" disabled={!isFormValid || loading}>
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
                 </DialogActions>
@@ -446,7 +457,7 @@ function ExchangeRateList() {
                 open={deleteDialogOpen}
                 onClose={handleCloseDeleteDialog}
                 TransitionComponent={Fade}
-                TransitionProps={{ timeout: 300 }}
+                TransitionProps={{ timeout: 300}}
             >
                 <DialogTitle>Подтверждение удаления</DialogTitle>
                 <DialogContent>
@@ -455,8 +466,8 @@ function ExchangeRateList() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
-                    <Button onClick={handleDeleteExchangeRate} color="primary">Удалить</Button>
+                    <Button onClick={handleCloseDeleteDialog} color="primary" disabled={loading}>Отмена</Button>
+                    <Button onClick={handleDeleteExchangeRate} color="primary" disabled={loading}>Удалить</Button>
                 </DialogActions>
             </Dialog>
         </>

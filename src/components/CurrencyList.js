@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import {
     Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
-    DialogTitle, TextField, Button, Pagination, Select, MenuItem, FormControl, InputLabel, Grid
+    DialogTitle, TextField, Button, Pagination, Select, MenuItem, FormControl, InputLabel, Grid, CircularProgress
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -94,6 +93,7 @@ function CurrencyList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [maxWidth, setMaxWidth] = useState('auto');
     const currencyRefs = useRef([]);
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -101,6 +101,7 @@ function CurrencyList() {
     }, []);
 
     const fetchCurrencies = async () => {
+        setLoading(true);
         try {
             const data = await currencyService.getAllCurrencies();
             if (Array.isArray(data)) {
@@ -115,6 +116,8 @@ function CurrencyList() {
             console.error("Ошибка при получении валют:", error);
             setCurrencies([]);
             setFilteredCurrencies([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -266,7 +269,21 @@ function CurrencyList() {
                                 </Typography>
                                 <ListWrapper>
                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                        {Array.isArray(currentCurrencies) && currentCurrencies.map((currency, index) => (
+                                        {loading ? (
+                                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                                <CircularProgress />
+                                            </Box>
+                                        ) : Array.isArray(currentCurrencies) && currentCurrencies.length === 0 ? (
+                                            currencies.length > 0 ? (
+                                                <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                                                    Загрузка...
+                                                </Typography>
+                                            ) : (
+                                                <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
+                                                    Загрузка...
+                                                </Typography>
+                                            )
+                                        ) : Array.isArray(currentCurrencies) && currentCurrencies.map((currency, index) => (
                                             <Fade in key={currency.id} timeout={300}>
                                                 <CurrencyItem
                                                     ref={el => (currencyRefs.current[index] = el)}
@@ -274,26 +291,16 @@ function CurrencyList() {
                                                 >
                                                     <Typography variant="body1">{`${currency.code} - ${currency.name}`}</Typography>
                                                     <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                        <IconButton onClick={() => handleEditCurrency(currency)} size="small">
+                                                        <IconButton onClick={() => handleEditCurrency(currency)} size="small" disabled={loading}>
                                                             <ModeEditOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                         </IconButton>
-                                                        <IconButton onClick={() => handleOpenDeleteDialog(currency)} size="small">
+                                                        <IconButton onClick={() => handleOpenDeleteDialog(currency)} size="small" disabled={loading}>
                                                             <DeleteOutlineIcon fontSize="inherit" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
                                                         </IconButton>
                                                     </Box>
                                                 </CurrencyItem>
                                             </Fade>
                                         ))}
-                                        {Array.isArray(filteredCurrencies) && filteredCurrencies.length === 0 && currencies.length > 0 && (
-                                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                                Валюты по фильтру не найдены.
-                                            </Typography>
-                                        )}
-                                        {Array.isArray(currencies) && currencies.length === 0 && (
-                                            <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                                                Валюты не добавлены.
-                                            </Typography>
-                                        )}
                                         {!Array.isArray(currencies) && (
                                             <Typography variant="body2" align="center" sx={{ mt: 2, color: 'red' }}>
                                                 Ошибка загрузки данных.
@@ -302,7 +309,7 @@ function CurrencyList() {
                                     </Box>
                                 </ListWrapper>
                                 <StyledAddBox>
-                                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />} disabled={loading}>
                                         Добавить валюту
                                     </Button>
                                 </StyledAddBox>
@@ -315,6 +322,7 @@ function CurrencyList() {
                                             color="primary"
                                             shape="rounded"
                                             size="small"
+                                            disabled={loading}
                                         />
                                     </PaginationContainer>
                                 )}
@@ -331,6 +339,7 @@ function CurrencyList() {
                                         value={filterCode}
                                         onChange={(e) => setFilterCode(e.target.value)}
                                         label="Код валюты"
+                                        disabled={loading}
                                     >
                                         <MenuItem value="">Все</MenuItem>
                                         {currencies.map((currency) => (
@@ -346,6 +355,7 @@ function CurrencyList() {
                                         value={filterName}
                                         onChange={(e) => setFilterName(e.target.value)}
                                         label="Название валюты"
+                                        disabled={loading}
                                     >
                                         <MenuItem value="">Все</MenuItem>
                                         {currencies.map((currency) => (
@@ -364,6 +374,7 @@ function CurrencyList() {
                                         value={sortBy}
                                         onChange={(e) => setSortBy(e.target.value)}
                                         label="Сортировать по"
+                                        disabled={loading}
                                     >
                                         <MenuItem value="code">Коду</MenuItem>
                                         <MenuItem value="name">Названию</MenuItem>
@@ -375,6 +386,7 @@ function CurrencyList() {
                                         value={sortOrder}
                                         onChange={(e) => setSortOrder(e.target.value)}
                                         label="Порядок"
+                                        disabled={loading}
                                     >
                                         <MenuItem value="asc">По возрастанию (A-Z)</MenuItem>
                                         <MenuItem value="desc">По убыванию (Z-A)</MenuItem>
@@ -389,7 +401,7 @@ function CurrencyList() {
                 open={open}
                 onClose={handleClose}
                 TransitionComponent={Fade}
-                TransitionProps={{ timeout: 300 }}
+                TransitionProps={{ timeout: 300}}
                 sx={{
                     '& .MuiDialog-paper': {
                         width: '400px',
@@ -414,6 +426,7 @@ function CurrencyList() {
                         size="small"
                         required
                         inputProps={{ maxLength: 3 }}
+                        disabled={loading}
                     />
                     <TextField
                         margin="dense"
@@ -426,6 +439,7 @@ function CurrencyList() {
                         onChange={handleNameChange}
                         size="small"
                         required
+                        disabled={loading}
                     />
                     {!isFormValid && (
                         <Typography variant="caption" color="error" sx={{ mt: 1 }}>
@@ -434,11 +448,11 @@ function CurrencyList() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">Отмена</Button>
+                    <Button onClick={handleClose} color="primary" disabled={loading}>Отмена</Button>
                     <Button
                         onClick={editing ? handleUpdateCurrency : handleCreateCurrency}
                         color="primary"
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || loading}
                     >
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
@@ -448,7 +462,7 @@ function CurrencyList() {
                 open={deleteDialogOpen}
                 onClose={handleCloseDeleteDialog}
                 TransitionComponent={Fade}
-                TransitionProps={{ timeout: 300 }}
+                TransitionProps={{ timeout: 300}}
             >
                 <DialogTitle>Подтверждение удаления</DialogTitle>
                 <DialogContent>
@@ -457,8 +471,8 @@ function CurrencyList() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
-                    <Button onClick={handleDeleteCurrency} color="primary">Удалить</Button>
+                    <Button onClick={handleCloseDeleteDialog} color="primary" disabled={loading}>Отмена</Button>
+                    <Button onClick={handleDeleteCurrency} color="primary" disabled={loading}>Удалить</Button>
                 </DialogActions>
             </Dialog>
         </>

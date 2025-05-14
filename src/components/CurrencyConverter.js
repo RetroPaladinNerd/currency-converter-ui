@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Paper, Typography, Box, Select, MenuItem, TextField, Button, FormControl,
-    InputLabel, Pagination, IconButton
+    InputLabel, Pagination, IconButton, CircularProgress
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -120,10 +120,11 @@ function CurrencyConverter() {
     const [bankMap, setBankMap] = useState({});
     const [bankRates, setBankRates] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(8); // Фиксированное значение 8 курсов
+    const [itemsPerPage, setItemsPerPage] = useState(8);
     const [leftColumnHeight, setLeftColumnHeight] = useState(0);
     const [availableFromCurrencies, setAvailableFromCurrencies] = useState([]);
     const [availableToCurrencies, setAvailableToCurrencies] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const leftColumnRef = useRef(null);
     const rateListRef = useRef(null);
@@ -131,26 +132,22 @@ function CurrencyConverter() {
 
     const calculateItemsPerPage = useCallback(() => {
         if (leftColumnRef.current && rateListRef.current && rateItemRefs.current.length > 0) {
-            // Получаем высоту левой колонки (конвертер + банки)
             const leftHeight = leftColumnRef.current.getBoundingClientRect().height;
             setLeftColumnHeight(leftHeight);
 
-            // Высота заголовка и пагинации
-            const titleHeight = 40; // Примерная высота заголовка "Текущие курсы"
-            const paginationHeight = exchangeRates.length > 0 ? 56 : 0; // Точная высота пагинации
+            const titleHeight = 40;
+            const paginationHeight = exchangeRates.length > 0 ? 56 : 0;
             const availableHeight = leftHeight - titleHeight - paginationHeight;
 
-            // Рассчитываем общую высоту для 8 элементов
             let totalHeightForEight = 0;
             for (let i = 0; i < Math.min(8, exchangeRates.length); i++) {
                 const rateItem = rateItemRefs.current[i];
-                const itemHeight = rateItem?.getBoundingClientRect().height || 40; // Если элемент еще не отрендерен, используем значение по умолчанию
+                const itemHeight = rateItem?.getBoundingClientRect().height || 40;
                 const addExtraSpace = i < exchangeRates.length - 1 && exchangeRates[i].bankId !== exchangeRates[i + 1].bankId;
-                const marginBottom = addExtraSpace ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
+                const marginBottom = addExtraSpace ? 16 : 4;
                 totalHeightForEight += itemHeight + marginBottom;
             }
 
-            // Если 8 элементов не помещаются полностью, корректируем itemsPerPage
             let newItemsPerPage = 8;
             if (totalHeightForEight > availableHeight) {
                 let visibleItems = 0;
@@ -173,7 +170,7 @@ function CurrencyConverter() {
             }
 
             setItemsPerPage(newItemsPerPage);
-            setCurrentPage(1); // Сбрасываем страницу при изменении количества элементов
+            setCurrentPage(1);
         }
     }, [exchangeRates]);
 
@@ -197,7 +194,6 @@ function CurrencyConverter() {
     }, [calculateItemsPerPage, banks, exchangeRates]);
 
     useEffect(() => {
-        // Очистка и обновление rateItemRefs при изменении exchangeRates
         rateItemRefs.current = new Array(exchangeRates.length).fill(null);
         calculateItemsPerPage();
     }, [exchangeRates, calculateItemsPerPage]);
@@ -225,6 +221,7 @@ function CurrencyConverter() {
     }, [bank, exchangeRates, fromCurrency, toCurrency]);
 
     const fetchInitialData = async () => {
+        setLoading(true);
         try {
             const [bankData, currencyData, rateData] = await Promise.all([
                 bankService.getAllBanks(),
@@ -263,6 +260,8 @@ function CurrencyConverter() {
             setBankMap(newBankMap);
         } catch (error) {
             console.error("Ошибка при загрузке данных:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -322,6 +321,7 @@ function CurrencyConverter() {
                                     value={bank}
                                     label="Банк"
                                     onChange={(e) => setBank(e.target.value)}
+                                    disabled={loading}
                                 >
                                     {banks.map((bank) => (
                                         <MenuItem key={bank.id} value={bank.id}>{bank.name}</MenuItem>
@@ -329,7 +329,7 @@ function CurrencyConverter() {
                                 </Select>
                             </FormControl>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank}>
+                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank || loading}>
                                     <InputLabel id="from-currency-select-label">Из валюты</InputLabel>
                                     <Select
                                         labelId="from-currency-select-label"
@@ -337,16 +337,17 @@ function CurrencyConverter() {
                                         value={fromCurrency}
                                         label="Из валюты"
                                         onChange={(e) => setFromCurrency(e.target.value)}
+                                        disabled={loading}
                                     >
                                         {availableFromCurrencies.map((currency) => (
                                             <MenuItem key={currency} value={currency}>{currency}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-                                <IconButton onClick={handleSwapCurrencies} sx={{ p: 0 }}>
+                                <IconButton onClick={handleSwapCurrencies} sx={{ p: 0 }} disabled={loading}>
                                     <SwapVertIcon />
                                 </IconButton>
-                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank}>
+                                <FormControl fullWidth variant="outlined" size="small" disabled={!bank || loading}>
                                     <InputLabel id="to-currency-select-label">В валюту</InputLabel>
                                     <Select
                                         labelId="to-currency-select-label"
@@ -354,6 +355,7 @@ function CurrencyConverter() {
                                         value={toCurrency}
                                         label="В валюту"
                                         onChange={(e) => setToCurrency(e.target.value)}
+                                        disabled={loading}
                                     >
                                         {availableToCurrencies.map((currency) => (
                                             <MenuItem key={currency} value={currency}>{currency}</MenuItem>
@@ -369,8 +371,9 @@ function CurrencyConverter() {
                                 variant="outlined"
                                 size="small"
                                 fullWidth
+                                disabled={loading}
                             />
-                            <Button variant="contained" color="primary" onClick={handleConvert}>
+                            <Button variant="contained" color="primary" onClick={handleConvert} disabled={loading}>
                                 Конвертировать
                             </Button>
                             {result && (
@@ -385,43 +388,48 @@ function CurrencyConverter() {
                             Список банков
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                            {banks.map((bank) => (
-                                <Box
-                                    key={bank.id}
-                                    sx={{
-                                        padding: 1,
-                                        borderRadius: '12px',
-                                        backgroundColor: '#ffffff',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                                        marginBottom: 0.5,
-                                    }}
-                                >
-                                    <Typography variant="body1">{bank.name}</Typography>
-                                    {bankRates[bank.id] && (
-                                        <Box sx={{ mt: 0.5, display: 'flex', gap: 2 }}>
-                                            {bankRates[bank.id].usdToByn && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    USD → BYN: {bankRates[bank.id].usdToByn}
-                                                </Typography>
-                                            )}
-                                            {bankRates[bank.id].rubToByn && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    RUB → BYN: {bankRates[bank.id].rubToByn}
-                                                </Typography>
-                                            )}
-                                            {bankRates[bank.id].eurToByn && (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    EUR → BYN: {bankRates[bank.id].eurToByn}
-                                                </Typography>
-                                            )}
-                                        </Box>
-                                    )}
+                            {loading ? (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                    <CircularProgress />
                                 </Box>
-                            ))}
-                            {banks.length === 0 && (
+                            ) : banks.length === 0 ? (
                                 <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
-                                    Банки не найдены.
+                                    Загрузка...
                                 </Typography>
+                            ) : (
+                                banks.map((bank) => (
+                                    <Box
+                                        key={bank.id}
+                                        sx={{
+                                            padding: 1,
+                                            borderRadius: '12px',
+                                            backgroundColor: '#ffffff',
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                            marginBottom: 0.5,
+                                        }}
+                                    >
+                                        <Typography variant="body1">{bank.name}</Typography>
+                                        {bankRates[bank.id] && (
+                                            <Box sx={{ mt: 0.5, display: 'flex', gap: 2 }}>
+                                                {bankRates[bank.id].usdToByn && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        USD → BYN: {bankRates[bank.id].usdToByn}
+                                                    </Typography>
+                                                )}
+                                                {bankRates[bank.id].rubToByn && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        RUB → BYN: {bankRates[bank.id].rubToByn}
+                                                    </Typography>
+                                                )}
+                                                {bankRates[bank.id].eurToByn && (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        EUR → BYN: {bankRates[bank.id].eurToByn}
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                        )}
+                                    </Box>
+                                ))
                             )}
                         </Box>
                     </StyledPaper>
@@ -432,7 +440,15 @@ function CurrencyConverter() {
                             Текущие курсы
                         </Typography>
                         <RateListContainer ref={rateListRef}>
-                            {currentExchangeRates.map((rate, index) => {
+                            {loading ? (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                    <CircularProgress />
+                                </Box>
+                            ) : currentExchangeRates.length === 0 ? (
+                                <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
+                                    Загрузка...
+                                </Typography>
+                            ) : currentExchangeRates.map((rate, index) => {
                                 const nextRate = currentExchangeRates[index + 1];
                                 const addExtraSpace = nextRate && rate.bankId !== nextRate.bankId;
                                 return (
@@ -450,11 +466,6 @@ function CurrencyConverter() {
                                     </RateItem>
                                 );
                             })}
-                            {exchangeRates.length === 0 && (
-                                <Typography variant="body2" align="center" sx={{ mt: 1, color: '#666666' }}>
-                                    Курсы не найдены.
-                                </Typography>
-                            )}
                         </RateListContainer>
                         {exchangeRates.length > 0 && (
                             <PaginationContainer>
@@ -465,6 +476,7 @@ function CurrencyConverter() {
                                     color="primary"
                                     shape="rounded"
                                     size="small"
+                                    disabled={loading}
                                 />
                             </PaginationContainer>
                         )}
