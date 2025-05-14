@@ -120,7 +120,7 @@ function CurrencyConverter() {
     const [bankMap, setBankMap] = useState({});
     const [bankRates, setBankRates] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(8); // Фиксированное значение 8 курсов
     const [leftColumnHeight, setLeftColumnHeight] = useState(0);
     const [availableFromCurrencies, setAvailableFromCurrencies] = useState([]);
     const [availableToCurrencies, setAvailableToCurrencies] = useState([]);
@@ -140,28 +140,38 @@ function CurrencyConverter() {
             const paginationHeight = exchangeRates.length > 0 ? 56 : 0; // Точная высота пагинации
             const availableHeight = leftHeight - titleHeight - paginationHeight;
 
-            // Рассчитываем, сколько элементов RateItem помещается
-            let visibleItems = 0;
-            let currentHeight = 0;
-
-            // Проходим по всем элементам, чтобы учесть их индивидуальные высоты
-            for (let i = 0; i < exchangeRates.length; i++) {
+            // Рассчитываем общую высоту для 8 элементов
+            let totalHeightForEight = 0;
+            for (let i = 0; i < Math.min(8, exchangeRates.length); i++) {
                 const rateItem = rateItemRefs.current[i];
                 const itemHeight = rateItem?.getBoundingClientRect().height || 40; // Если элемент еще не отрендерен, используем значение по умолчанию
                 const addExtraSpace = i < exchangeRates.length - 1 && exchangeRates[i].bankId !== exchangeRates[i + 1].bankId;
                 const marginBottom = addExtraSpace ? 16 : 4; // theme.spacing(2) = 16px, theme.spacing(0.5) = 4px
-                const totalItemHeight = itemHeight + marginBottom;
-
-                // Проверяем, помещается ли элемент полностью
-                if (currentHeight + totalItemHeight <= availableHeight) {
-                    currentHeight += totalItemHeight;
-                    visibleItems++;
-                } else {
-                    break; // Прерываем, если следующий элемент не помещается полностью
-                }
+                totalHeightForEight += itemHeight + marginBottom;
             }
 
-            const newItemsPerPage = Math.max(1, visibleItems); // Убедимся, что минимум 1 элемент
+            // Если 8 элементов не помещаются полностью, корректируем itemsPerPage
+            let newItemsPerPage = 8;
+            if (totalHeightForEight > availableHeight) {
+                let visibleItems = 0;
+                let currentHeight = 0;
+                for (let i = 0; i < exchangeRates.length; i++) {
+                    const rateItem = rateItemRefs.current[i];
+                    const itemHeight = rateItem?.getBoundingClientRect().height || 40;
+                    const addExtraSpace = i < exchangeRates.length - 1 && exchangeRates[i].bankId !== exchangeRates[i + 1].bankId;
+                    const marginBottom = addExtraSpace ? 16 : 4;
+                    const totalItemHeight = itemHeight + marginBottom;
+
+                    if (currentHeight + totalItemHeight <= availableHeight) {
+                        currentHeight += totalItemHeight;
+                        visibleItems++;
+                    } else {
+                        break;
+                    }
+                }
+                newItemsPerPage = Math.max(1, visibleItems);
+            }
+
             setItemsPerPage(newItemsPerPage);
             setCurrentPage(1); // Сбрасываем страницу при изменении количества элементов
         }
@@ -221,14 +231,12 @@ function CurrencyConverter() {
                 currencyService.getAllCurrencies(),
                 exchangeRateService.getAllExchangeRates()
             ]);
-            // Ограничиваем список банков до 8
-            const limitedBanks = bankData.slice(0, 8);
-            setBanks(limitedBanks);
+            setBanks(bankData);
             setCurrencies(currencyData);
             if (Array.isArray(rateData)) {
                 setExchangeRates(rateData);
                 const ratesByBank = {};
-                limitedBanks.forEach(bank => {
+                bankData.forEach(bank => {
                     ratesByBank[bank.id] = {
                         usdToByn: null,
                         eurToByn: null,
@@ -236,7 +244,7 @@ function CurrencyConverter() {
                     };
                 });
                 rateData.forEach(rate => {
-                    if (rate.toCurrencyCode === 'BYN' && limitedBanks.some(b => b.id === rate.bankId)) {
+                    if (rate.toCurrencyCode === 'BYN') {
                         if (rate.fromCurrencyCode === 'USD') {
                             ratesByBank[rate.bankId].usdToByn = rate.rate;
                         } else if (rate.fromCurrencyCode === 'EUR') {
@@ -249,7 +257,7 @@ function CurrencyConverter() {
                 setBankRates(ratesByBank);
             }
             const newBankMap = {};
-            limitedBanks.forEach(bank => {
+            bankData.forEach(bank => {
                 newBankMap[bank.id] = bank;
             });
             setBankMap(newBankMap);
