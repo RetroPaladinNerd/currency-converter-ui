@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
     Paper, Typography, Box, IconButton, Dialog, DialogActions, DialogContent,
-    DialogTitle, TextField, Button, Pagination
+    DialogTitle, TextField, Button, Pagination, CircularProgress
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -67,6 +66,7 @@ function BankList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [bankToDelete, setBankToDelete] = useState(null);
+    const [loading, setLoading] = useState(true);
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -74,11 +74,14 @@ function BankList() {
     }, []);
 
     const fetchBanks = async () => {
+        setLoading(true);
         try {
             const data = await bankService.getAllBanks();
             setBanks(data);
         } catch (error) {
             console.error("Ошибка при получении банков:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -160,29 +163,34 @@ function BankList() {
                     Банки
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {currentBanks.map((bank) => (
-                        <Fade in key={bank.id} timeout={300}>
-                            <BankItem>
-                                <Typography variant="body1">{bank.name}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                    <IconButton onClick={() => handleEditBank(bank)} size="small">
-                                        <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                    </IconButton>
-                                    <IconButton onClick={() => handleOpenDeleteDialog(bank)} size="small">
-                                        <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
-                                    </IconButton>
-                                </Box>
-                            </BankItem>
-                        </Fade>
-                    ))}
-                    {banks.length === 0 && (
+                    {loading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                            <CircularProgress />
+                        </Box>
+                    ) : currentBanks.length === 0 ? (
                         <Typography variant="body2" align="center" sx={{ mt: 2, color: '#666666' }}>
-                            Банки не найдены.
+                            Загрузка...
                         </Typography>
+                    ) : (
+                        currentBanks.map((bank) => (
+                            <Fade in key={bank.id} timeout={300}>
+                                <BankItem>
+                                    <Typography variant="body1">{bank.name}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <IconButton onClick={() => handleEditBank(bank)} size="small">
+                                            <ModeEditOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                        </IconButton>
+                                        <IconButton onClick={() => handleOpenDeleteDialog(bank)} size="small">
+                                            <DeleteOutlineIcon fontSize="small" sx={{ color: '#666666', '&:hover': { color: '#007aff' } }} />
+                                        </IconButton>
+                                    </Box>
+                                </BankItem>
+                            </Fade>
+                        ))
                     )}
                 </Box>
                 <StyledAddBox>
-                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                    <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />} disabled={loading}>
                         Добавить банк
                     </Button>
                 </StyledAddBox>
@@ -194,6 +202,7 @@ function BankList() {
                             onChange={handlePageChange}
                             color="primary"
                             shape="rounded"
+                            disabled={loading}
                         />
                     </PaginationContainer>
                 )}
@@ -212,11 +221,12 @@ function BankList() {
                         value={newBankName}
                         onChange={(e) => setNewBankName(e.target.value)}
                         size="small"
+                        disabled={loading}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">Отмена</Button>
-                    <Button onClick={editing ? handleUpdateBank : handleCreateBank} color="primary">
+                    <Button onClick={handleClose} color="primary" disabled={loading}>Отмена</Button>
+                    <Button onClick={editing ? handleUpdateBank : handleCreateBank} color="primary" disabled={loading || !newBankName.trim()}>
                         {editing ? "Сохранить" : "Создать"}
                     </Button>
                 </DialogActions>
@@ -229,8 +239,8 @@ function BankList() {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteDialog} color="primary">Отмена</Button>
-                    <Button onClick={handleDeleteBank} color="primary">Удалить</Button>
+                    <Button onClick={handleCloseDeleteDialog} color="primary" disabled={loading}>Отмена</Button>
+                    <Button onClick={handleDeleteBank} color="primary" disabled={loading}>Удалить</Button>
                 </DialogActions>
             </Dialog>
         </MainContent>
